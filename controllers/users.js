@@ -24,8 +24,8 @@ const createUser = (req, res) => {
 };
 
 const getUser = (req, res) => {
-  User.findById(req.params._id)
-    .then((users) => res.status(200).send({ data: users }))
+  User.findById(req.params.id)
+    .then((user) => res.status(200).send({ data: user }))
     .catch((err) => res.status(500).send({ message: `Произошла ошибка при получении данных пользователя - ${err}`}));
 };
 
