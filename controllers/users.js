@@ -18,10 +18,9 @@ const createUser = (req, res) => {
 };
 
 const getUser = (req, res) => {
-  console.log(req.params);
   User.findById(req.params.id)
     .orFail(() => {
-      res.status(404).send(new UserNotFound());
+      throw new UserNotFound();
     })
     .then((user) => {
       res.status(200).send(user);
@@ -30,7 +29,7 @@ const getUser = (req, res) => {
       console.log(err.name);
       console.log(err.statusCode);
       if (err.name === 'CastError') {
-        res.status(400).send(new IncorrectDataSent('получения пользователя'));
+        res.status(404).send(new UserNotFound());
       } else if (err.statusCode === 404) {
         res.status(404).send(new UserNotFound());
       } else {
@@ -50,17 +49,18 @@ const getUsers = (req, res) => {
 };
 
 const updateUserInfo = (req, res) => {
-  User.findByIdAndUpdate(req.user.id, {
+  console.log(req.params);
+  User.findByIdAndUpdate(req.user._id, {
     name: req.body.name,
     about: req.body.about,
   }).orFail(() => {
-    res.status(404).send(new UserNotFound());
+    throw new IncorrectDataSent('обновления информации пользователя');
   })
     .then((user) => {
       res.status(200).send(user);
     })
     .catch((err) => {
-      if (err.name === 'CastError') {
+      if (err.name === 'ValidationError') {
         res.status(400).send(new IncorrectDataSent('обновления информации пользователя'));
       } else if (err.statusCode === 404) {
         res.status(404).send(new UserNotFound());
@@ -71,11 +71,11 @@ const updateUserInfo = (req, res) => {
 };
 
 const updateAvatar = (req, res) => {
-  User.findByIdAndUpdate(req.user.id, {
+  User.findByIdAndUpdate(req.user._id, {
     avatar: req.body.avatar,
   })
     .orFail(() => {
-      res.status(404).send(new UserNotFound());
+      throw new IncorrectDataSent('обновления аватара');
     })
     .then((user) => {
       res.status(200).send(user);
