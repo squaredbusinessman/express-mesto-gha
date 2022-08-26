@@ -8,7 +8,7 @@ const getCards = (req, res) => {
       res.status(200).send(cards);
     })
     .catch(() => {
-      res.status(500).send({ message: new ApplicationError() });
+      res.status(500).send({ message: new ApplicationError().message });
     });
 };
 
@@ -20,9 +20,9 @@ const createCard = (req, res) => {
     })
     .catch((err) => {
       if (err.name === 'CastError') {
-        res.status(400).send(new IncorrectDataSent('создания карточки'));
+        res.status(400).send({ message: new IncorrectDataSent('создания карточки') });
       } else {
-        res.status(500).send(new ApplicationError());
+        res.status(500).send({ message: new ApplicationError().message });
       }
     });
 };
@@ -33,7 +33,7 @@ const deleteCard = (req, res) => {
       res.status(200).send(card);
     })
     .catch((err) => {
-      res.status(err.status).send(err.message);
+      res.status(err.statusCode).send({ message: err.message });
     });
 };
 
@@ -47,7 +47,7 @@ const likeCard = (req, res) => {
       res.status(200).send(card);
     })
     .catch((err) => {
-      res.status(err.status).send(err.message);
+      res.status(err.statusCode).send({ message: err.message });
     });
 };
 
@@ -61,7 +61,7 @@ const dislikeCard = (req, res) => {
       res.status(200).send(card);
     })
     .catch((err) => {
-      res.status(err.status).send(err.message);
+      res.status(err.statusCode).send({ message: err.message });
     });
 };
 
