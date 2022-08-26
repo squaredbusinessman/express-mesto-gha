@@ -9,6 +9,10 @@ const User = require('../models/user');
 // 422 - unprocessable entity
 // 404 - not found
 
+
+
+
+
 const createUser = (req, res) => {
   const { name, about, avatar } = req.body;
 
@@ -16,7 +20,7 @@ const createUser = (req, res) => {
     .then((user) => res.status(201).send({ data: user }))
     .catch((err) => {
       if (err.name === 'ValidationError') {
-        res.status(400).send({ message: `Произошла ошибка валидации при создании пользователя - ${err}`});
+        res.status(400).send({ message: `Произошла ошибка валидации при создании пользователя - ${err}` });
       } else {
         res.status(500).send({ message: `Произошла ошибка - ${err}, при попытке создать пользователя!` });
       }
@@ -26,13 +30,13 @@ const createUser = (req, res) => {
 const getUser = (req, res) => {
   User.findById(req.params.id)
     .then((user) => res.status(200).send({ data: user }))
-    .catch((err) => res.status(500).send({ message: `Произошла ошибка при получении данных пользователя - ${err}`}));
+    .catch((err) => res.status(500).send({ message: `Произошла ошибка при получении данных пользователя - ${err}` }));
 };
 
 const getUsers = (req, res) => {
   User.find({})
-    .then((users) => res.status(200).send({ data: users}))
-    .catch((err) => res.status(500).send({ message: `Произошла ошибка при получении данных пользователей - ${err}`}));
+    .then((users) => res.status(200).send({ data: users }))
+    .catch((err) => res.status(500).send({ message: `Произошла ошибка при получении данных пользователей - ${err}` }));
 };
 
 const updateUserInfo = (req, res) => {
@@ -45,14 +49,14 @@ const updateUserInfo = (req, res) => {
     throw error;
   }).then((user) => res.status(201).send({ data: user }))
     .catch((err) => {
-    if (err.name === 'CastError') {
-      res.send({ message: 'Данные обновлённого профиля - некорректны.'});
-    } else if (err.statusCode === 404) {
-      res.send({ message: 'Пользователя с данным id не существует!'});
-    } else {
-      res.send({ message: `Произошла ошибка ${err}.`})
-    }
-  })
+      if (err.name === 'CastError') {
+        res.send({ message: 'Данные обновлённого профиля - некорректны.' });
+      } else if (err.statusCode === 404) {
+        res.send({ message: 'Пользователя с данным id не существует!' });
+      } else {
+        res.send({ message: `Произошла ошибка ${err}.` });
+      }
+    });
 };
 
 const updateAvatar = (req, res) => {
@@ -60,20 +64,20 @@ const updateAvatar = (req, res) => {
     avatar: req.body.avatar,
   })
     .orFail(() => {
-    const error = new Error();
-    error.statusCode = 404;
-    throw error;
-  })
+      const error = new Error();
+      error.statusCode = 404;
+      throw error;
+    })
     .then((user) => res.status(201).send({ data: user }))
     .catch((err) => {
-    if (err.name === 'CastError') {
-      res.send({ message: 'Данные обновлённого аватара - некорректны.'});
-    } else if (err.statusCode === 404) {
-      res.send({ message: 'Пользователя с данным id не существует!'});
-    } else {
-      res.send({ message: `Произошла ошибка ${err}.`})
-    }
-  })
+      if (err.name === 'CastError') {
+        res.send({ message: 'Данные обновлённого аватара - некорректны.' });
+      } else if (err.statusCode === 404) {
+        res.send({ message: 'Пользователя с данным id не существует!' });
+      } else {
+        res.send({ message: `Произошла ошибка ${err}.` });
+      }
+    });
 };
 
 module.exports = {
