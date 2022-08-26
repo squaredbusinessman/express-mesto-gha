@@ -10,7 +10,7 @@ const createUser = (req, res) => {
     .then((user) => res.status(201).send(user))
     .catch((err) => {
       if (err.name === 'ValidationError') {
-        res.status(400).send(new IncorrectDataSent('создания пользователя'));
+        res.status(400).send(err.message);
       } else {
         res.status(500).send(new ApplicationError());
       }
@@ -27,9 +27,9 @@ const getUser = (req, res) => {
     })
     .catch((err) => {
       if (err.name === 'CastError') {
-        res.status(err.status).send(err.message);
-      } else if (err.status === 404) {
-        res.status(err.status).send(err.message);
+        res.status(400).send(err.message);
+      } else if (err.statusCode === 404) {
+        res.status(err.statusCode).send(err.message);
       } else {
         res.status(500).send(new ApplicationError());
       }
@@ -62,9 +62,9 @@ const updateUserInfo = (req, res) => {
     })
     .catch((err) => {
       if (err.name === 'ValidationError') {
-        res.status(err.status).send(err.message);
-      } else if (err.status === 404) {
-        res.status(err.status).send(err.message);
+        res.status(400).send(err.message);
+      } else if (err.statusCode === 404) {
+        res.status(err.statusCode).send(err.message);
       } else {
         res.status(500).send(ApplicationError());
       }
@@ -86,9 +86,9 @@ const updateAvatar = (req, res) => {
     })
     .catch((err) => {
       if (err.name === 'CastError') {
-        res.status(400).send(new IncorrectDataSent('обновления аватара'));
+        res.status(400).send(err.message);
       } else if (err.statusCode === 404) {
-        res.status(404).send(new UserNotFound());
+        res.status(err.statusCode).send(err.message);
       } else {
         res.status(500).send(new ApplicationError());
       }
