@@ -5,7 +5,7 @@ const IncorrectDataSent = require("../errors/IncorrectDataSent");
 const getCards = (req, res) => {
   Card.find({})
     .then((cards) => {
-      res.status(200).send({ data: cards });
+      res.status(200).send(cards);
     })
     .catch(() => {
       throw new ApplicationError();
@@ -15,7 +15,9 @@ const getCards = (req, res) => {
 const createCard = (req, res) => {
   const { name, link, owner } = req.body;
   return Card.create({ name, link, owner })
-    .then((card) => { res.status(201).send(card); })
+    .then((card) => {
+      res.status(201).send(card);
+    })
     .catch((err) => {
       if (err.name === 'CastError') {
         throw new IncorrectDataSent('создания карточки');

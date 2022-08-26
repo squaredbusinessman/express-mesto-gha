@@ -7,7 +7,7 @@ const createUser = (req, res) => {
   const { name, about, avatar } = req.body;
 
   User.create({ name, about, avatar })
-    .then((user) => res.status(201).send({ data: user }))
+    .then((user) => res.status(201).send(user))
     .catch((err) => {
       if (err.name === 'CastError') {
         throw new IncorrectDataSent('создания пользователя');
@@ -23,7 +23,7 @@ const getUser = (req, res) => {
       throw new UserNotFound();
     })
     .then((user) => {
-      res.status(200).send({ data: user });
+      res.status(200).send(user);
     })
     .catch((err) => {
       if (err.name === 'CastError') {
@@ -39,7 +39,7 @@ const getUser = (req, res) => {
 const getUsers = (req, res) => {
   User.find({})
     .then((users) => {
-      res.status(200).send({ data: users });
+      res.status(200).send(users);
     })
     .catch(() => {
       throw new ApplicationError();
@@ -54,7 +54,7 @@ const updateUserInfo = (req, res) => {
     throw new UserNotFound();
   })
     .then((user) => {
-      res.status(200).send({ data: user });
+      res.status(200).send(user);
     })
     .catch((err) => {
       if (err.name === 'CastError') {
@@ -75,7 +75,7 @@ const updateAvatar = (req, res) => {
       throw new UserNotFound();
     })
     .then((user) => {
-      res.status(200).send({ data: user });
+      res.status(200).send(user);
     })
     .catch((err) => {
       if (err.name === 'CastError') {
