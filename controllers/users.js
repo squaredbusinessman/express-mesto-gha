@@ -1,17 +1,7 @@
 const User = require('../models/user');
-
-// 200 - success
-// 201 - success, resource created
-// 401 - not authorized
-// 403 - authorized, but bo access
-// 500 - server error
-// 400 - not valid data in req
-// 422 - unprocessable entity
-// 404 - not found
-
-
-
-
+const UserNotFound = require("../errors/UserNotFound");
+const IncorrectDataSent = require("../errors/IncorrectDataSent");
+const ApplicationError = require("../errors/ApplicationError");
 
 const createUser = (req, res) => {
   const { name, about, avatar } = req.body;
@@ -19,42 +9,60 @@ const createUser = (req, res) => {
   User.create({ name, about, avatar })
     .then((user) => res.status(201).send({ data: user }))
     .catch((err) => {
-      if (err.name === 'ValidationError') {
-        res.status(400).send({ message: `Произошла ошибка валидации при создании пользователя - ${err}` });
-      } else {
-        res.status(500).send({ message: `Произошла ошибка - ${err}, при попытке создать пользователя!` });
+      if (err.name === 'CastError') {
+        throw new IncorrectDataSent('создания пользователя');
+      }  else {
+        throw new ApplicationError();
       }
     });
 };
 
 const getUser = (req, res) => {
   User.findById(req.params.id)
-    .then((user) => res.status(200).send({ data: user }))
-    .catch((err) => res.status(500).send({ message: `Произошла ошибка при получении данных пользователя - ${err}` }));
+    .orFail(() => {
+      throw new UserNotFound();
+    })
+    .then((user) => {
+      res.status(200).send({data: user});
+    })
+    .catch((err) => {
+      if (err.name === 'CastError') {
+        throw new IncorrectDataSent('получения пользователя');
+      } else if (err.statusCode === 404) {
+        throw new UserNotFound();
+      } else {
+        throw new ApplicationError();
+      }
+    });
 };
 
 const getUsers = (req, res) => {
   User.find({})
-    .then((users) => res.status(200).send({ data: users }))
-    .catch((err) => res.status(500).send({ message: `Произошла ошибка при получении данных пользователей - ${err}` }));
+    .then((users) => {
+      res.status(200).send({ data: users });
+    })
+    .catch((err) => {
+      throw new ApplicationError();
+    });
 };
 
 const updateUserInfo = (req, res) => {
   User.findByIdAndUpdate(req.user._id, {
     name: req.body.name,
     about: req.body.about,
-  }).orFail(() => {
-    const error = new Error();
-    error.statusCode = 404;
-    throw error;
-  }).then((user) => res.status(201).send({ data: user }))
+  })    .orFail(() => {
+    throw new UserNotFound();
+  })
+    .then((user) => {
+      res.status(200).send({data: user});
+    })
     .catch((err) => {
       if (err.name === 'CastError') {
-        res.send({ message: 'Данные обновлённого профиля - некорректны.' });
+        throw new IncorrectDataSent('обновления информации пользователя');
       } else if (err.statusCode === 404) {
-        res.send({ message: 'Пользователя с данным id не существует!' });
+        throw new UserNotFound();
       } else {
-        res.send({ message: `Произошла ошибка ${err}.` });
+        throw new ApplicationError();
       }
     });
 };
@@ -64,18 +72,18 @@ const updateAvatar = (req, res) => {
     avatar: req.body.avatar,
   })
     .orFail(() => {
-      const error = new Error();
-      error.statusCode = 404;
-      throw error;
+      throw new UserNotFound();
     })
-    .then((user) => res.status(201).send({ data: user }))
+    .then((user) => {
+      res.status(200).send({data: user});
+    })
     .catch((err) => {
       if (err.name === 'CastError') {
-        res.send({ message: 'Данные обновлённого аватара - некорректны.' });
+        throw new IncorrectDataSent('обновления аватара');
       } else if (err.statusCode === 404) {
-        res.send({ message: 'Пользователя с данным id не существует!' });
+        throw new UserNotFound();
       } else {
-        res.send({ message: `Произошла ошибка ${err}.` });
+        throw new ApplicationError();
       }
     });
 };
