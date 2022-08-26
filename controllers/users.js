@@ -26,12 +26,10 @@ const getUser = (req, res) => {
       res.status(200).send(user);
     })
     .catch((err) => {
-      console.log(err.name);
-      console.log(err.statusCode);
       if (err.name === 'CastError') {
-        res.status(404).send(new UserNotFound());
-      } else if (err.statusCode === 404) {
-        res.status(404).send(new UserNotFound());
+        res.status(err.status).send(err.message);
+      } else if (err.status === 404) {
+        res.status(err.status).send(err.message);
       } else {
         res.status(500).send(new ApplicationError());
       }
@@ -53,6 +51,9 @@ const updateUserInfo = (req, res) => {
   User.findByIdAndUpdate(req.user._id, {
     name: req.body.name,
     about: req.body.about,
+  }, {
+    runValidators: true,
+    new: true,
   }).orFail(() => {
     throw new IncorrectDataSent('обновления информации пользователя');
   })
@@ -61,9 +62,9 @@ const updateUserInfo = (req, res) => {
     })
     .catch((err) => {
       if (err.name === 'ValidationError') {
-        res.status(400).send(new IncorrectDataSent('обновления информации пользователя'));
-      } else if (err.statusCode === 404) {
-        res.status(404).send(new UserNotFound());
+        res.status(err.status).send(err.message);
+      } else if (err.status === 404) {
+        res.status(err.status).send(err.message);
       } else {
         res.status(500).send(ApplicationError());
       }
@@ -73,6 +74,9 @@ const updateUserInfo = (req, res) => {
 const updateAvatar = (req, res) => {
   User.findByIdAndUpdate(req.user._id, {
     avatar: req.body.avatar,
+  }, {
+    runValidators: true,
+    new: true,
   })
     .orFail(() => {
       throw new IncorrectDataSent('обновления аватара');
