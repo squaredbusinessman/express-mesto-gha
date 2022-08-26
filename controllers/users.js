@@ -9,7 +9,7 @@ const createUser = (req, res) => {
   User.create({ name, about, avatar })
     .then((user) => res.status(201).send(user))
     .catch((err) => {
-      if (err.name === 'CastError') {
+      if (err.name === 'ValidationError') {
         throw new IncorrectDataSent('создания пользователя');
       } else {
         throw new ApplicationError();
