@@ -1,7 +1,6 @@
 const User = require('../models/user');
 const UserNotFound = require('../errors/UserNotFound');
 const IncorrectDataSent = require('../errors/IncorrectDataSent');
-const ApplicationError = require('../errors/ApplicationError');
 
 const createUser = (req, res) => {
   const { name, about, avatar } = req.body;
@@ -50,6 +49,9 @@ const updateUserInfo = (req, res) => {
   User.findByIdAndUpdate(req.user._id, {
     name: req.body.name,
     about: req.body.about,
+  }, {
+    runValidators: true,
+    new: true,
   }).orFail(() => {
     throw new IncorrectDataSent('обновления информации пользователя');
   })
@@ -70,6 +72,9 @@ const updateUserInfo = (req, res) => {
 const updateAvatar = (req, res) => {
   User.findByIdAndUpdate(req.user._id, {
     avatar: req.body.avatar,
+  }, {
+    runValidators: true,
+    new: true,
   })
     .orFail(() => {
       throw new IncorrectDataSent('обновления аватара');
