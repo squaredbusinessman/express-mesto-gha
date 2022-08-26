@@ -8,7 +8,7 @@ const getCards = (req, res) => {
       res.status(200).send(cards);
     })
     .catch(() => {
-      throw new ApplicationError();
+      res.status(500).send({ message: new ApplicationError() });
     });
 };
 
@@ -20,9 +20,9 @@ const createCard = (req, res) => {
     })
     .catch((err) => {
       if (err.name === 'CastError') {
-        throw new IncorrectDataSent('создания карточки');
+        res.status(400).send(new IncorrectDataSent('создания карточки'));
       } else {
-        throw new ApplicationError();
+        res.status(500).send(new ApplicationError());
       }
     });
 };

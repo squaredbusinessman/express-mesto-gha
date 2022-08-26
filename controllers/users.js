@@ -10,9 +10,9 @@ const createUser = (req, res) => {
     .then((user) => res.status(201).send(user))
     .catch((err) => {
       if (err.name === 'ValidationError') {
-        throw new IncorrectDataSent('создания пользователя');
+        res.status(400).send(new IncorrectDataSent('создания пользователя'));
       } else {
-        throw new ApplicationError();
+        res.status(500).send(new ApplicationError());
       }
     });
 };
@@ -27,11 +27,11 @@ const getUser = (req, res) => {
     })
     .catch((err) => {
       if (err.name === 'CastError') {
-        throw new IncorrectDataSent('получения пользователя');
+        res.status(400).send(new IncorrectDataSent('получения пользователя'));
       } else if (err.statusCode === 404) {
-        throw new UserNotFound();
+        res.status(404).send(new UserNotFound());
       } else {
-        throw new ApplicationError();
+        res.status(500).send(new ApplicationError());
       }
     });
 };
@@ -42,7 +42,7 @@ const getUsers = (req, res) => {
       res.status(200).send(users);
     })
     .catch(() => {
-      throw new ApplicationError();
+      res.status(500).send(new ApplicationError());
     });
 };
 
@@ -58,11 +58,11 @@ const updateUserInfo = (req, res) => {
     })
     .catch((err) => {
       if (err.name === 'CastError') {
-        throw new IncorrectDataSent('обновления информации пользователя');
+        res.status(400).send(new IncorrectDataSent('обновления информации пользователя'));
       } else if (err.statusCode === 404) {
-        throw new UserNotFound();
+        res.status(404).send(new UserNotFound());
       } else {
-        throw new ApplicationError();
+        res.status(500).send(ApplicationError());
       }
     });
 };
@@ -79,11 +79,11 @@ const updateAvatar = (req, res) => {
     })
     .catch((err) => {
       if (err.name === 'CastError') {
-        throw new IncorrectDataSent('обновления аватара');
+        res.status(400).send(new IncorrectDataSent('обновления аватара'));
       } else if (err.statusCode === 404) {
-        throw new UserNotFound();
+        res.status(404).send(new UserNotFound());
       } else {
-        throw new ApplicationError();
+        res.status(500).send(new ApplicationError());
       }
     });
 };

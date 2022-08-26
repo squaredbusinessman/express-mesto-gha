@@ -2,7 +2,7 @@ const ApplicationError = require('./ApplicationError');
 
 class IncorrectDataSent extends ApplicationError {
   constructor(objError) {
-    super(400, `Переданы некорректные данные в методы создания ${objError}`);
+    super(400, `Переданы некорректные данные в методы ${objError}`);
   }
 }
 
