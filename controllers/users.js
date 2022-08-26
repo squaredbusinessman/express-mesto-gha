@@ -10,9 +10,9 @@ const createUser = (req, res) => {
     .then((user) => res.status(201).send(user))
     .catch((err) => {
       if (err.name === 'ValidationError') {
-        res.status(400).send(err.message);
+        res.status(400).send({ message: err.message });
       } else {
-        res.status(500).send(new ApplicationError());
+        res.status(500).send({ message: err.message });
       }
     });
 };
@@ -27,11 +27,11 @@ const getUser = (req, res) => {
     })
     .catch((err) => {
       if (err.name === 'CastError') {
-        res.status(400).send(err.message);
+        res.status(400).send({ message: err.message });
       } else if (err.name === 'UserNotFound') {
-        res.status(404).send(err.message);
+        res.status(404).send({ message: err.message });
       } else {
-        res.status(500).send(new ApplicationError());
+        res.status(500).send({ message: err.message });
       }
     });
 };
@@ -41,8 +41,8 @@ const getUsers = (req, res) => {
     .then((users) => {
       res.status(200).send(users);
     })
-    .catch(() => {
-      res.status(500).send(new ApplicationError());
+    .catch((err) => {
+      res.status(500).send({ message: err.message });
     });
 };
 
@@ -58,11 +58,11 @@ const updateUserInfo = (req, res) => {
     })
     .catch((err) => {
       if (err.name === 'ValidationError') {
-        res.status(400).send(err.message);
+        res.status(400).send({ message: err.message });
       }  else if (err.name === 'UserNotFound') {
-        res.status(404).send(err.message);
+        res.status(404).send({ message: err.message });
       } else {
-        res.status(500).send(ApplicationError());
+        res.status(500).send({ message: err.message });
       }
     });
 };
@@ -79,11 +79,11 @@ const updateAvatar = (req, res) => {
     })
     .catch((err) => {
       if (err.name === 'CastError') {
-        res.status(400).send(err.message);
+        res.status(400).send({ message: err.message });
       } else if (err.name === 'UserNotFound') {
-        res.status(404).send(err.message);
+        res.status(404).send({ message: err.message });
       } else {
-        res.status(500).send(new ApplicationError());
+        res.status(500).send({ message: err.message });
       }
     });
 };
