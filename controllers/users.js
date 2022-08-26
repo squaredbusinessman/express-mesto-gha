@@ -18,14 +18,17 @@ const createUser = (req, res) => {
 };
 
 const getUser = (req, res) => {
+  console.log(req.params);
   User.findById(req.params.id)
     .orFail(() => {
-      throw new UserNotFound();
+      res.status(404).send(new UserNotFound());
     })
     .then((user) => {
       res.status(200).send(user);
     })
     .catch((err) => {
+      console.log(err.name);
+      console.log(err.statusCode);
       if (err.name === 'CastError') {
         res.status(400).send(new IncorrectDataSent('получения пользователя'));
       } else if (err.statusCode === 404) {
@@ -47,11 +50,11 @@ const getUsers = (req, res) => {
 };
 
 const updateUserInfo = (req, res) => {
-  User.findByIdAndUpdate(req.user._id, {
+  User.findByIdAndUpdate(req.user.id, {
     name: req.body.name,
     about: req.body.about,
   }).orFail(() => {
-    throw new UserNotFound();
+    res.status(404).send(new UserNotFound());
   })
     .then((user) => {
       res.status(200).send(user);
@@ -68,11 +71,11 @@ const updateUserInfo = (req, res) => {
 };
 
 const updateAvatar = (req, res) => {
-  User.findByIdAndUpdate(req.user._id, {
+  User.findByIdAndUpdate(req.user.id, {
     avatar: req.body.avatar,
   })
     .orFail(() => {
-      throw new UserNotFound();
+      res.status(404).send(new UserNotFound());
     })
     .then((user) => {
       res.status(200).send(user);
