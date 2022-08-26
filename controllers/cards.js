@@ -1,17 +1,27 @@
 const Card = require('../models/card');
+const ApplicationError = require('../errors/ApplicationError');
+const IncorrectDataSent = require("../errors/IncorrectDataSent");
 
 const getCards = (req, res) => {
   Card.find({})
-    .then((cards) => res.status(200).send({ data: cards }))
-    .catch((err) => res.status(500).send({ message: `Произошла ошибка при получении списка карточек - ${err}` }));
+    .then((cards) => {
+      res.status(200).send({ data: cards });
+    })
+    .catch(() => {
+      throw new ApplicationError();
+    });
 };
 
 const createCard = (req, res) => {
   const { name, link, owner } = req.body;
   return Card.create({ name, link, owner })
-    .then((card) => { res.status(200).send(card); })
+    .then((card) => { res.status(201).send(card); })
     .catch((err) => {
-      res.status(500).send({ message: err.message });
+      if (err.name === 'CastError') {
+        throw new IncorrectDataSent('создания карточки');
+      } else {
+        throw new ApplicationError();
+      }
     });
 };
 

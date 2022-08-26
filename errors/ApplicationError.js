@@ -1,4 +1,4 @@
-export default class ApplicationError extends Error {
+class ApplicationError extends Error {
   constructor(status = 500, message = 'Внутренняя ошибка сервера') {
     super();
     this.status = status;
@@ -8,6 +8,8 @@ export default class ApplicationError extends Error {
     Error.captureStackTrace(this, this.constructor);
   }
 }
+
+module.exports = ApplicationError;
 
 // 200 - success
 // 201 - success, resource created

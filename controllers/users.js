@@ -1,7 +1,7 @@
 const User = require('../models/user');
-const UserNotFound = require("../errors/UserNotFound");
-const IncorrectDataSent = require("../errors/IncorrectDataSent");
-const ApplicationError = require("../errors/ApplicationError");
+const UserNotFound = require('../errors/UserNotFound');
+const IncorrectDataSent = require('../errors/IncorrectDataSent');
+const ApplicationError = require('../errors/ApplicationError');
 
 const createUser = (req, res) => {
   const { name, about, avatar } = req.body;
@@ -11,7 +11,7 @@ const createUser = (req, res) => {
     .catch((err) => {
       if (err.name === 'CastError') {
         throw new IncorrectDataSent('создания пользователя');
-      }  else {
+      } else {
         throw new ApplicationError();
       }
     });
@@ -23,7 +23,7 @@ const getUser = (req, res) => {
       throw new UserNotFound();
     })
     .then((user) => {
-      res.status(200).send({data: user});
+      res.status(200).send({ data: user });
     })
     .catch((err) => {
       if (err.name === 'CastError') {
@@ -41,7 +41,7 @@ const getUsers = (req, res) => {
     .then((users) => {
       res.status(200).send({ data: users });
     })
-    .catch((err) => {
+    .catch(() => {
       throw new ApplicationError();
     });
 };
@@ -50,11 +50,11 @@ const updateUserInfo = (req, res) => {
   User.findByIdAndUpdate(req.user._id, {
     name: req.body.name,
     about: req.body.about,
-  })    .orFail(() => {
+  }).orFail(() => {
     throw new UserNotFound();
   })
     .then((user) => {
-      res.status(200).send({data: user});
+      res.status(200).send({ data: user });
     })
     .catch((err) => {
       if (err.name === 'CastError') {
@@ -75,7 +75,7 @@ const updateAvatar = (req, res) => {
       throw new UserNotFound();
     })
     .then((user) => {
-      res.status(200).send({data: user});
+      res.status(200).send({ data: user });
     })
     .catch((err) => {
       if (err.name === 'CastError') {

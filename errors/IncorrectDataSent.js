@@ -1,7 +1,9 @@
-import ApplicationError from "./ApplicationError";
+const ApplicationError = require('./ApplicationError');
 
-export default class IncorrectDataSent extends ApplicationError {
+class IncorrectDataSent extends ApplicationError {
   constructor(objError) {
     super(400, `Переданы некорректные данные в методы создания ${objError}`);
   }
 }
+
+module.exports = IncorrectDataSent;
