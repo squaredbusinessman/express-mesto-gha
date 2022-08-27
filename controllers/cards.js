@@ -17,11 +17,11 @@ const createCard = (req, res) => {
   const { name, link, owner } = req.body;
   return Card.create({ name, link, owner })
     .then((card) => {
-      res.status(201).send(card._id);
+      res.status(201).send({ data: card });
     })
     .catch((err) => {
       if (err.name === 'ValidationError') {
-        res.status(400).send({ message: new IncorrectDataSent('создания карточки') });
+        res.status(400).send({ message: 'Переданы некорректные данные при создании карточки' });
       } else {
         res.status(500).send({ message: new ApplicationError().message });
       }
@@ -31,7 +31,7 @@ const createCard = (req, res) => {
 const deleteCard = (req, res) => {
   Card.findByIdAndRemove(req.params.cardId)
     .then((card) => {
-      res.status(200).send(card);
+      res.status(200).send({ data: card });
     })
     .orFail(() => {
       const error = new CardNotFound();
@@ -63,7 +63,7 @@ const likeCard = (req, res) => {
       throw error;
     })
     .then((card) => {
-      res.status(200).send(card);
+      res.status(201).send({ data: card });
     })
     .catch((err) => {
       if (err.name === 'CastError') {
@@ -88,7 +88,7 @@ const dislikeCard = (req, res) => {
       throw error;
     })
     .then((card) => {
-      res.status(200).send(card);
+      res.status(200).send({ data: card });
     })
     .catch((err) => {
       if (err.name === 'CastError') {
