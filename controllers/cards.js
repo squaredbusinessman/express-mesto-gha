@@ -17,7 +17,7 @@ const createCard = (req, res) => {
   const { name, link, owner } = req.body;
   return Card.create({ name, link, owner })
     .then((card) => {
-      res.status(201).send({ data: card });
+      res.status(201).send({ id: card._id });
     })
     .catch((err) => {
       if (err.name === 'ValidationError') {
@@ -30,13 +30,13 @@ const createCard = (req, res) => {
 
 const deleteCard = (req, res) => {
   Card.findByIdAndRemove(req.params.cardId)
-    .then((card) => {
-      res.status(200).send({ data: card });
-    })
     .orFail(() => {
       const error = new CardNotFound();
       error.statusCode = 404;
       throw error;
+    })
+    .then((card) => {
+      res.status(200).send(card);
     })
     .catch((err) => {
       if (err.name === 'CastError') {
@@ -63,7 +63,7 @@ const likeCard = (req, res) => {
       throw error;
     })
     .then((card) => {
-      res.status(201).send({ data: card });
+      res.status(201).send(card);
     })
     .catch((err) => {
       if (err.name === 'CastError') {
@@ -88,7 +88,7 @@ const dislikeCard = (req, res) => {
       throw error;
     })
     .then((card) => {
-      res.status(200).send({ data: card });
+      res.status(200).send(card);
     })
     .catch((err) => {
       if (err.name === 'CastError') {
