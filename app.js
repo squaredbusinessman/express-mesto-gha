@@ -22,16 +22,12 @@ app.use((req, res, next) => {
   next();
 });
 
-app.use('/', usersRouter);
-app.use('/', cardsRouter);
+app.use('/users', usersRouter);
+app.use('/cards', cardsRouter);
 
-app.use(function (err, req, res, next) {
-  if (res.headersSent) {
-    return next(err);
-  }
-  res.status(500);
-  res.render('error', { message: err });
-})
+app.use('*', (req, res) => {
+  res.status(404).send({ message: 'Данной страницы - не существует!' });
+});
 
 
 app.listen(PORT, () => {
