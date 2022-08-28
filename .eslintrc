@@ -17,6 +17,7 @@
     "plugins": [
     ],
     "rules": {
+      "import/no-extraneous-dependencies": ["error", {"devDependencies": true}],
       "no-underscore-dangle": ["error", { "allow": ["_id"]}],
       "linebreak-style": 0
     }

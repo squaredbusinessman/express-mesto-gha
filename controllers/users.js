@@ -1,7 +1,7 @@
 const User = require('../models/user');
 const UserNotFound = require('../errors/UserNotFound');
 const IncorrectDataSent = require('../errors/IncorrectDataSent');
-const ApplicationError = require("../errors/ApplicationError");
+const ApplicationError = require('../errors/ApplicationError');
 
 const createUser = (req, res) => {
   const { name, about, avatar } = req.body;
@@ -66,7 +66,7 @@ const updateUserInfo = (req, res) => {
     .catch((err) => {
       if (err.name === 'ValidationError') {
         res.status(400).send({ message: 'Данные для обновления пользователя - некорректны' });
-      }  else if (err.name === 'UserNotFound') {
+      } else if (err.name === 'UserNotFound') {
         res.status(404).send({ message: 'Пользователь с данным id не найден' });
       } else {
         res.status(500).send({ message: new ApplicationError().message });

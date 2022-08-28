@@ -29,6 +29,5 @@ app.use('*', (req, res) => {
   res.status(404).send({ message: 'Данной страницы - не существует!' });
 });
 
-
 app.listen(PORT, () => {
 });

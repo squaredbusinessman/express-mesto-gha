@@ -1,7 +1,6 @@
 const Card = require('../models/card');
 const ApplicationError = require('../errors/ApplicationError');
-const IncorrectDataSent = require("../errors/IncorrectDataSent");
-const CardNotFound = require("../errors/CardNotFound");
+const CardNotFound = require('../errors/CardNotFound');
 
 const getCards = (req, res) => {
   Card.find({})
@@ -18,7 +17,6 @@ const createCard = (req, res) => {
   const owner = req.user._id;
   return Card.create({ name, link, owner })
     .then((card) => {
-      console.log(card);
       res.status(201).send(card);
     })
     .catch((err) => {
