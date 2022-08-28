@@ -26,8 +26,8 @@ app.use((req, res, next) => {
   res.status(404).send({ message: 'Данной страницы - не существует!' });
 });*/
 
-app.use('/users', usersRouter);
-app.use('/cards', cardsRouter);
+app.use('/', usersRouter);
+app.use('/', cardsRouter);
 
 
 app.listen(PORT, () => {
