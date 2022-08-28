@@ -22,12 +22,12 @@ app.use((req, res, next) => {
   next();
 });
 
-app.use('*', (req, res) => {
+/*app.use('*', (req, res) => {
   res.status(404).send({ message: 'Данной страницы - не существует!' });
-});
+});*/
 
-app.use('/', usersRouter);
-app.use('/', cardsRouter);
+app.use('/users', usersRouter);
+app.use('/cards', cardsRouter);
 
 
 app.listen(PORT, () => {
