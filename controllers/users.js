@@ -55,7 +55,7 @@ const updateUserInfo = (req, res) => {
     runValidators: true,
     new: true,
   }).orFail(() => {
-    throw new IncorrectDataSent('обновления информации пользователя');
+    throw new UserNotFound();
   })
     .then((user) => {
       res.send(user);
@@ -79,7 +79,7 @@ const updateAvatar = (req, res) => {
     new: true,
   })
     .orFail(() => {
-      throw new IncorrectDataSent('обновления аватара');
+      throw new UserNotFound();
     })
     .then((user) => {
       res.send(user);
