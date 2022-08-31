@@ -1,6 +1,5 @@
 const User = require('../models/user');
 const UserNotFound = require('../errors/UserNotFound');
-const IncorrectDataSent = require('../errors/IncorrectDataSent');
 const ApplicationError = require('../errors/ApplicationError');
 const errorsCodes = require('../errors/errorsCodes');
 
