@@ -1,6 +1,7 @@
 const Card = require('../models/card');
 const ApplicationError = require('../errors/ApplicationError');
 const CardNotFound = require('../errors/CardNotFound');
+const {statusCodes} = require("../errors/statusCodes");
 
 const getCards = (req, res) => {
   Card.find({})
@@ -8,7 +9,7 @@ const getCards = (req, res) => {
       res.send(cards);
     })
     .catch(() => {
-      res.status(500).send({ message: new ApplicationError().message });
+      res.status(statusCodes.internalError).send({ message: new ApplicationError().message });
     });
 };
 
@@ -21,9 +22,9 @@ const createCard = (req, res) => {
     })
     .catch((err) => {
       if (err.name === 'ValidationError') {
-        res.status(400).send({ message: 'Переданы некорректные данные при создании карточки' });
+        res.status(statusCodes.incorrectData).send({ message: 'Переданы некорректные данные при создании карточки' });
       } else {
-        res.status(500).send({ message: new ApplicationError().message });
+        res.status(statusCodes.internalError).send({ message: new ApplicationError().message });
       }
     });
 };
@@ -32,7 +33,7 @@ const deleteCard = (req, res) => {
   Card.findByIdAndRemove(req.params.cardId)
     .orFail(() => {
       const error = new CardNotFound();
-      error.statusCode = 404;
+      error.statusCode = error.status;
       throw error;
     })
     .then((card) => {
@@ -40,11 +41,11 @@ const deleteCard = (req, res) => {
     })
     .catch((err) => {
       if (err.name === 'CastError') {
-        res.status(400).send({ message: 'Переданы некорректные данные для удаления карточки' });
+        res.status(statusCodes.incorrectData).send({ message: 'Переданы некорректные данные для удаления карточки' });
       } else if (err.statusCode === 404) {
-        res.status(404).send({ message: 'Карточка с указанным id не найдена' });
+        res.status(statusCodes.notFound).send({ message: 'Карточка с указанным id не найдена' });
       } else {
-        res.status(500).send({ message: new ApplicationError().message });
+        res.status(statusCodes.internalError).send({ message: new ApplicationError().message });
       }
 
       res.status(err.statusCode).send({ message: err.message });
@@ -59,7 +60,7 @@ const likeCard = (req, res) => {
   )
     .orFail(() => {
       const error = new CardNotFound();
-      error.statusCode = 404;
+      error.statusCode = error.status;
       throw error;
     })
     .then((card) => {
@@ -67,11 +68,11 @@ const likeCard = (req, res) => {
     })
     .catch((err) => {
       if (err.name === 'CastError') {
-        res.status(400).send({ message: 'Переданы некорректные данные при лайке' });
+        res.status(statusCodes.incorrectData).send({ message: 'Переданы некорректные данные при лайке' });
       } else if (err.statusCode === 404) {
-        res.status(404).send({ message: 'Передан несуществующий id карточки' });
+        res.status(statusCodes.notFound).send({ message: 'Передан несуществующий id карточки' });
       } else {
-        res.status(500).send({ message: new ApplicationError().message });
+        res.status(statusCodes.internalError).send({ message: new ApplicationError().message });
       }
     });
 };
@@ -84,7 +85,7 @@ const dislikeCard = (req, res) => {
   )
     .orFail(() => {
       const error = new CardNotFound();
-      error.statusCode = 404;
+      error.statusCode = error.status;
       throw error;
     })
     .then((card) => {
@@ -92,11 +93,11 @@ const dislikeCard = (req, res) => {
     })
     .catch((err) => {
       if (err.name === 'CastError') {
-        res.status(400).send({ message: 'Переданы некорректные данные при дизлайке' });
+        res.status(statusCodes.incorrectData).send({ message: 'Переданы некорректные данные при дизлайке' });
       } else if (err.statusCode === 404) {
-        res.status(404).send({ message: 'Передан несуществующий id карточки' });
+        res.status(statusCodes.notFound).send({ message: 'Передан несуществующий id карточки' });
       } else {
-        res.status(500).send({ message: new ApplicationError().message });
+        res.status(statusCodes.internalError).send({ message: new ApplicationError().message });
       }
     });
 };
