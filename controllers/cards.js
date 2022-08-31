@@ -45,8 +45,6 @@ const deleteCard = (req, res) => {
       } else {
         res.status(errorsCodes.InternalError).send({ message: new ApplicationError().message });
       }
-
-      res.status(err.statusCode).send({ message: err.message });
     });
 };
 
