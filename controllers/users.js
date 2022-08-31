@@ -2,7 +2,7 @@ const User = require('../models/user');
 const UserNotFound = require('../errors/UserNotFound');
 const IncorrectDataSent = require('../errors/IncorrectDataSent');
 const ApplicationError = require('../errors/ApplicationError');
-const {STATUS_CODES} = require('../errors/statusCodes');
+const STATUS_CODES = require('../errors/statusCodes');
 
 const createUser = (req, res) => {
   const { name, about, avatar } = req.body;
