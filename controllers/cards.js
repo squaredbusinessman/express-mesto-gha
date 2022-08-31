@@ -5,7 +5,7 @@ const CardNotFound = require('../errors/CardNotFound');
 const getCards = (req, res) => {
   Card.find({})
     .then((cards) => {
-      res.status(200).send(cards);
+      res.send(cards);
     })
     .catch(() => {
       res.status(500).send({ message: new ApplicationError().message });
@@ -36,7 +36,7 @@ const deleteCard = (req, res) => {
       throw error;
     })
     .then((card) => {
-      res.status(200).send(card);
+      res.send(card);
     })
     .catch((err) => {
       if (err.name === 'CastError') {
@@ -88,7 +88,7 @@ const dislikeCard = (req, res) => {
       throw error;
     })
     .then((card) => {
-      res.status(200).send(card);
+      res.send(card);
     })
     .catch((err) => {
       if (err.name === 'CastError') {

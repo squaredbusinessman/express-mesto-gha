@@ -25,7 +25,7 @@ const getUser = (req, res) => {
       throw error;
     })
     .then((user) => {
-      res.status(200).send(user);
+      res.send(user);
     })
     .catch((err) => {
       if (err.name === 'CastError') {
@@ -41,7 +41,7 @@ const getUser = (req, res) => {
 const getUsers = (req, res) => {
   User.find({})
     .then((users) => {
-      res.status(200).send(users);
+      res.send(users);
     })
     .catch(() => {
       res.status(500).send({ message: new ApplicationError().message });
@@ -61,7 +61,7 @@ const updateUserInfo = (req, res) => {
     throw error;
   })
     .then((user) => {
-      res.status(200).send(user);
+      res.send(user);
     })
     .catch((err) => {
       if (err.name === 'ValidationError') {
@@ -87,7 +87,7 @@ const updateAvatar = (req, res) => {
       throw error;
     })
     .then((user) => {
-      res.status(200).send(user);
+      res.send(user);
     })
     .catch((err) => {
       if (err.name === 'CastError') {
