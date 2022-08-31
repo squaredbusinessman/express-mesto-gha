@@ -1,7 +1,7 @@
 const Card = require('../models/card');
 const ApplicationError = require('../errors/ApplicationError');
 const CardNotFound = require('../errors/CardNotFound');
-const STATUS_CODES = require('../errors/statusCodes');
+const { STATUS_CODES } = require('../errors/statusCodes');
 
 const getCards = (req, res) => {
   Card.find({})
