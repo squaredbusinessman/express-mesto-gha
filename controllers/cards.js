@@ -32,9 +32,7 @@ const createCard = (req, res) => {
 const deleteCard = (req, res) => {
   Card.findByIdAndRemove(req.params.cardId)
     .orFail(() => {
-      const error = new CardNotFound();
-      error.statusCode = error.status;
-      throw error;
+      throw new CardNotFound();
     })
     .then((card) => {
       res.send(card);
@@ -59,9 +57,7 @@ const likeCard = (req, res) => {
     { new: true },
   )
     .orFail(() => {
-      const error = new CardNotFound();
-      error.statusCode = error.status;
-      throw error;
+      throw new CardNotFound();
     })
     .then((card) => {
       res.status(201).send(card);
@@ -84,9 +80,7 @@ const dislikeCard = (req, res) => {
     { new: true },
   )
     .orFail(() => {
-      const error = new CardNotFound();
-      error.statusCode = error.status;
-      throw error;
+      throw new CardNotFound();
     })
     .then((card) => {
       res.send(card);

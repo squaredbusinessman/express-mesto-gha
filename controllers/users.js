@@ -21,9 +21,7 @@ const createUser = (req, res) => {
 const getUser = (req, res) => {
   User.findById(req.params.id)
     .orFail(() => {
-      const error = new UserNotFound();
-      error.statusCode = error.status;
-      throw error;
+      throw new UserNotFound();
     })
     .then((user) => {
       res.send(user);
@@ -57,9 +55,7 @@ const updateUserInfo = (req, res) => {
     runValidators: true,
     new: true,
   }).orFail(() => {
-    const error = new IncorrectDataSent('обновления информации пользователя');
-    error.statusCode = error.status;
-    throw error;
+    throw new IncorrectDataSent('обновления информации пользователя');
   })
     .then((user) => {
       res.send(user);
@@ -83,9 +79,7 @@ const updateAvatar = (req, res) => {
     new: true,
   })
     .orFail(() => {
-      const error = new IncorrectDataSent('обновления аватара');
-      error.statusCode = error.status;
-      throw error;
+      throw new IncorrectDataSent('обновления аватара');
     })
     .then((user) => {
       res.send(user);
