@@ -2,7 +2,7 @@ const User = require('../models/user');
 const UserNotFound = require('../errors/UserNotFound');
 const IncorrectDataSent = require('../errors/IncorrectDataSent');
 const ApplicationError = require('../errors/ApplicationError');
-const {statusCodes} = require("../errors/statusCodes");
+const {STATUS_CODES} = require('../errors/statusCodes');
 
 const createUser = (req, res) => {
   const { name, about, avatar } = req.body;
@@ -92,11 +92,11 @@ const updateAvatar = (req, res) => {
     })
     .catch((err) => {
       if (err.name === 'CastError') {
-        res.status(statusCodes.incorrectData).send({ message: 'Данные для обновления аватара - некорректны' });
+        res.status(STATUS_CODES.incorrectData).send({ message: 'Данные для обновления аватара - некорректны' });
       } else if (err.name === 'UserNotFound') {
-        res.status(statusCodes.notFound).send({ message: 'Пользователь с данным id не найден' });
+        res.status(STATUS_CODES.notFound).send({ message: 'Пользователь с данным id не найден' });
       } else {
-        res.status(statusCodes.internalError).send({ message: new ApplicationError().message });
+        res.status(STATUS_CODES.internalError).send({ message: new ApplicationError().message });
       }
     });
 };
