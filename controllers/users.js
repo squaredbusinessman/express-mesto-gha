@@ -2,7 +2,7 @@ const User = require('../models/user');
 const UserNotFound = require('../errors/UserNotFound');
 const IncorrectDataSent = require('../errors/IncorrectDataSent');
 const ApplicationError = require('../errors/ApplicationError');
-const { STATUS_CODES } = require('../errors/statusCodes');
+const errorsCodes = require('../errors/errorsCodes');
 
 const createUser = (req, res) => {
   const { name, about, avatar } = req.body;
@@ -11,9 +11,9 @@ const createUser = (req, res) => {
     .then((user) => res.status(201).send(user))
     .catch((err) => {
       if (err.name === 'ValidationError') {
-        res.status(400).send({ message: 'Введены некорректные данные при создании пользователя' });
+        res.status(errorsCodes.ValidationError).send({ message: 'Введены некорректные данные при создании пользователя' });
       } else {
-        res.status(500).send({ message: new ApplicationError().message });
+        res.status(errorsCodes.InternalError).send({ message: new ApplicationError().message });
       }
     });
 };
@@ -30,11 +30,11 @@ const getUser = (req, res) => {
     })
     .catch((err) => {
       if (err.name === 'CastError') {
-        res.status(400).send({ message: 'Указаны некорректные данные при запросе пользователя' });
+        res.status(errorsCodes.ValidationError).send({ message: 'Указаны некорректные данные при запросе пользователя' });
       } else if (err.name === 'UserNotFound') {
-        res.status(404).send({ message: 'Пользователь с данным id не найден' });
+        res.status(errorsCodes.NotFoundError).send({ message: 'Пользователь с данным id не найден' });
       } else {
-        res.status(500).send({ message: new ApplicationError().message });
+        res.status(errorsCodes.InternalError).send({ message: new ApplicationError().message });
       }
     });
 };
@@ -45,7 +45,7 @@ const getUsers = (req, res) => {
       res.send(users);
     })
     .catch(() => {
-      res.status(500).send({ message: new ApplicationError().message });
+      res.status(errorsCodes.InternalError).send({ message: new ApplicationError().message });
     });
 };
 
@@ -66,11 +66,11 @@ const updateUserInfo = (req, res) => {
     })
     .catch((err) => {
       if (err.name === 'ValidationError') {
-        res.status(400).send({ message: 'Данные для обновления пользователя - некорректны' });
+        res.status(errorsCodes.ValidationError).send({ message: 'Данные для обновления пользователя - некорректны' });
       } else if (err.name === 'UserNotFound') {
-        res.status(404).send({ message: 'Пользователь с данным id не найден' });
+        res.status(errorsCodes.NotFoundError).send({ message: 'Пользователь с данным id не найден' });
       } else {
-        res.status(500).send({ message: new ApplicationError().message });
+        res.status(errorsCodes.InternalError).send({ message: new ApplicationError().message });
       }
     });
 };
@@ -92,11 +92,11 @@ const updateAvatar = (req, res) => {
     })
     .catch((err) => {
       if (err.name === 'CastError') {
-        res.status(STATUS_CODES.incorrectData).send({ message: 'Данные для обновления аватара - некорректны' });
+        res.status(errorsCodes.ValidationError).send({ message: 'Данные для обновления аватара - некорректны' });
       } else if (err.name === 'UserNotFound') {
-        res.status(STATUS_CODES.notFound).send({ message: 'Пользователь с данным id не найден' });
+        res.status(errorsCodes.NotFoundError).send({ message: 'Пользователь с данным id не найден' });
       } else {
-        res.status(STATUS_CODES.internalError).send({ message: new ApplicationError().message });
+        res.status(errorsCodes.InternalError).send({ message: new ApplicationError().message });
       }
     });
 };

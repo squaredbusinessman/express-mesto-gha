@@ -7,12 +7,12 @@
 // 422 - unprocessable entity
 // 404 - not found
 
-const STATUS_CODES = {
-  incorrectData: 400,
-  notFound: 404,
-  internalError: 500,
-};
+const InternalError = 500;
+const ValidationError = 400;
+const NotFoundError = 404;
 
 module.exports = {
-  statusCodes: STATUS_CODES,
+  InternalError,
+  ValidationError,
+  NotFoundError,
 };
