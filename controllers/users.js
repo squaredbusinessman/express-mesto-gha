@@ -107,7 +107,12 @@ const login = (req, res) => {
         { algorithm: 'RS256' }
       );
 
-      res.send( { token });
+      res
+        .cookie('jwt', token, {
+          maxAge: 3600000 * 24 * 7,
+          httpOnly: true,
+      })
+        .send( { token });
   }).catch((err) => { // ошибка аутентификации
       res.status(401).send({ message: err.message });
   })
