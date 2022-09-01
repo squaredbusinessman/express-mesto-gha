@@ -2,6 +2,8 @@ const User = require('../models/user');
 const UserNotFound = require('../errors/UserNotFound');
 const ApplicationError = require('../errors/ApplicationError');
 const errorsCodes = require('../errors/errorsCodes');
+const bcrypt =require('bcryptjs');
+const jwt = require("jsonwebtoken");
 
 const createUser = (req, res) => {
   const { name, about, avatar, email, password } = req.body;
@@ -93,6 +95,23 @@ const updateAvatar = (req, res) => {
       }
     });
 };
+
+const login = (req, res) => {
+  const { email, password } = req.body;
+  User.findUserByCredentials(email, password)
+    .then((user) => {
+      const token = jwt.sign(
+        { _id: user._id },
+        'very-hard-key',
+        { expiresIn: '7d' },
+        { algorithm: 'RS256' }
+      );
+
+      res.send( { token });
+  }).catch((err) => { // ошибка аутентификации
+      res.status(401).send({ message: err.message });
+  })
+}
 
 module.exports = {
   createUser,
