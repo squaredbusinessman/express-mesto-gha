@@ -12,12 +12,18 @@ const createUserRouter = require('./routes/users');
 const usersRouter = require('./routes/users');
 const cardsRouter = require('./routes/cards');
 const errorsCodes = require('./errors/errorsCodes');
+const ApplicationError = require('./errors/ApplicationError');
 
 mongoose.connect('mongodb://localhost:27017/mestodb');
 
 app.use(express.json());
 
-app.post('/signin', loginRouter);
+app.post('/signin', celebrate({
+  body: Joi.object().keys({
+    email: Joi.string().email().required(),
+    password: Joi.string().required(),
+  }),
+}), loginRouter);
 app.post('/signup', celebrate({
   body: Joi.object().keys({
     name: Joi.string().min(2).max(30),
@@ -35,13 +41,14 @@ app.use('/users', usersRouter);
 app.use('/cards', cardsRouter);
 
 app.use('*', (req, res) => {
-  res.status(errorsCodes.UnAuthorizedError).send({ message: 'Произошла ошибка при попытке авторизации' });
+  throw new ApplicationError(errorsCodes.UnAuthorizedError, 'Произошла ошибка при попытке авторизации');
 });
 
 app.use(errors());
 
 app.use((err, req, res, next) => {
-  res.status(err.statusCode).send({ message: err.message });
+  const { statusCode = 500, message } = err;
+  res.status(statusCode).send({ message: message});
   next();
 });
 

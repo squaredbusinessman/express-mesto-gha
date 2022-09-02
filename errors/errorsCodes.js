@@ -11,10 +11,12 @@ const InternalError = 500;
 const ValidationError = 400;
 const NotFoundError = 404;
 const UnAuthorizedError = 401;
+const ExistingEmailError = 409;
 
 module.exports = {
   InternalError,
   ValidationError,
   NotFoundError,
   UnAuthorizedError,
+  ExistingEmailError,
 };
