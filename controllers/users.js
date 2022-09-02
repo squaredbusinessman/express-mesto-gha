@@ -19,6 +19,23 @@ const createUser = (req, res) => {
     });
 };
 
+const getUserData = (req, res) => {
+  const id = req.user._id;
+  User.findById(id).orFail(() => {
+    throw new UserNotFound();
+  }).then(user => {
+    res.send(user);
+  }).catch((err) => {
+    if (err.name === 'CastError') {
+      res.status(errorsCodes.ValidationError).send({ message: 'Указаны некорректные данные пользователя' });
+    } else if (err.name === 'UserNotFound') {
+      res.status(errorsCodes.NotFoundError).send({ message: 'Пользователь с данным id не найден' });
+    } else {
+      res.status(errorsCodes.InternalError).send({ message: new ApplicationError().message });
+    }
+  })
+}
+
 const getUser = (req, res) => {
   User.findById(req.params.id)
     .orFail(() => {
@@ -120,6 +137,7 @@ const login = (req, res) => {
 
 module.exports = {
   createUser,
+  getUserData,
   getUser,
   getUsers,
   updateAvatar,
