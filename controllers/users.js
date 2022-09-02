@@ -1,15 +1,28 @@
+const jwt = require('jsonwebtoken');
+const bcrypt = require('bcryptjs');
 const User = require('../models/user');
 const UserNotFound = require('../errors/UserNotFound');
 const ApplicationError = require('../errors/ApplicationError');
 const errorsCodes = require('../errors/errorsCodes');
-const bcrypt =require('bcryptjs');
-const jwt = require("jsonwebtoken");
-const CardNotFound = require("../errors/CardNotFound");
 
 const createUser = (req, res, next) => {
-  const { name, about, avatar, email, password } = req.body;
+  const {
+    name,
+    about,
+    avatar,
+    email,
+    password,
+  } = req.body;
   bcrypt.hash(password, 10)
-    .then((hash) => User.create({ name, about, avatar, email, password: hash }))
+    .then((hash) => User.create(
+      {
+        name,
+        about,
+        avatar,
+        email,
+        password: hash,
+      },
+    ))
     .then((user) => res.status(201).send(user))
     .catch((err) => {
       if (err.statusCode === errorsCodes.ValidationError || err.message === 'user validation failed') {
@@ -19,25 +32,26 @@ const createUser = (req, res, next) => {
       } else {
         next(err);
       }
-    }).catch(next);
+    })
+    .catch(next);
 };
 
 const getUserData = (req, res, next) => {
   const id = req.user._id;
   User.findById(id)
-    .then(user => {
-    res.send(user);
+    .then((user) => {
+      res.send(user);
     })
     .catch((err) => {
-    if (err.name === 'CastError') {
-      throw new ApplicationError(errorsCodes.ValidationError, 'Указаны некорректные данные пользователя');
-    } else if (err.name === 'UserNotFound') {
-      throw new UserNotFound();
-    } else {
-      next(err);
-    }
-  }).catch(next);
-}
+      if (err.name === 'CastError') {
+        throw new ApplicationError(errorsCodes.ValidationError, 'Указаны некорректные данные пользователя');
+      } else if (err.name === 'UserNotFound') {
+        throw new UserNotFound();
+      } else {
+        next(err);
+      }
+    }).catch(next);
+};
 
 const getUser = (req, res, next) => {
   User.findById(req.params.id)
@@ -108,23 +122,23 @@ const updateAvatar = (req, res, next) => {
 
 const login = (req, res, next) => {
   const { email, password } = req.body;
-  User.findUserByCredentials(email, password)
+  User.FindUserByCredentials(email, password)
     .then((user) => {
       const token = jwt.sign(
         { _id: user._id },
         'very-hard-key',
         { expiresIn: '7d' },
-        { algorithm: 'RS256' }
+        { algorithm: 'RS256' },
       );
 
       res
         .cookie('jwt', token, {
           maxAge: 3600000 * 24 * 7,
           httpOnly: true,
-      })
-        .send( { token });
-  }).catch(next);
-}
+        })
+        .send({ token });
+    }).catch(next);
+};
 
 module.exports = {
   createUser,
@@ -133,5 +147,5 @@ module.exports = {
   getUsers,
   updateAvatar,
   updateUserInfo,
-  login
+  login,
 };

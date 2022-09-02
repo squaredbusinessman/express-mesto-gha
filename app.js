@@ -1,7 +1,7 @@
 const express = require('express');
 const mongoose = require('mongoose');
-const auth = require('./middlewares/auth');
 const { celebrate, Joi, errors } = require('celebrate');
+const auth = require('./middlewares/auth');
 
 const { PORT = 3000 } = process.env;
 
@@ -32,7 +32,7 @@ app.post('/signup', celebrate({
       .regex(/https?:\/\/(www)?(\.)?([0-9а-яa-zё]{1,})?(\.)?([0-9а-яa-zё]{1,})?(\.)?[0-9а-яa-zё]{1,}\.[а-яa-zё]{2,4}[a-zа-яё\-._~:/?#[\]@!$&'()*+,;=]*#?/i),
     email: Joi.string().email().required(),
     password: Joi.string().min(8).required(),
-  })
+  }),
 }), createUserRouter);
 
 app.use(auth);
@@ -40,7 +40,7 @@ app.use(auth);
 app.use('/users', usersRouter);
 app.use('/cards', cardsRouter);
 
-app.use('*', (req, res) => {
+app.use('*', () => {
   throw new ApplicationError(errorsCodes.UnAuthorizedError, 'Произошла ошибка при попытке авторизации');
 });
 
@@ -48,7 +48,7 @@ app.use(errors());
 
 app.use((err, req, res, next) => {
   const { statusCode = 500, message } = err;
-  res.status(statusCode).send({ message: message});
+  res.status(statusCode).send({ message });
   next();
 });
 

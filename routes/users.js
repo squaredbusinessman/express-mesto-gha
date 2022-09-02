@@ -1,4 +1,5 @@
 const router = require('express').Router();
+const { celebrate, Joi } = require('celebrate');
 const {
   getUser,
   getUsers,
@@ -6,7 +7,6 @@ const {
   updateAvatar,
   updateUserInfo,
 } = require('../controllers/users');
-const { celebrate, Joi } = require('celebrate');
 
 router.get('/', celebrate({
   headers: Joi.object().keys({

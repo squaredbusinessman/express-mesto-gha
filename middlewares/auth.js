@@ -14,7 +14,7 @@ module.exports = (req, res, next) => {
     // попытаемся верифицировать токен
     payload = jwt.verify(
       token,
-      'very-hard-key'
+      'very-hard-key',
     );
   } catch (err) {
     // отправим ошибку, если не получилось
@@ -24,4 +24,4 @@ module.exports = (req, res, next) => {
   req.user = payload; // записываем пейлоуд в объект запроса
 
   next(); // пропускаем запрос дальше
-}
+};

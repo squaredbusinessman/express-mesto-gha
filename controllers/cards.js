@@ -35,7 +35,7 @@ const deleteCard = (req, res, next) => {
         throw new ApplicationError(errorsCodes.AccessError, 'Можно удалять только созданные вами посты');
       } else {
         Card.findByIdAndRemove(req.params.id)
-          .then((card) => { res.send(card) });
+          .then((removedCard) => { res.send(removedCard); });
       }
     })
     .catch((err) => {
