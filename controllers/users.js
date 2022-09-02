@@ -4,6 +4,7 @@ const ApplicationError = require('../errors/ApplicationError');
 const errorsCodes = require('../errors/errorsCodes');
 const bcrypt =require('bcryptjs');
 const jwt = require("jsonwebtoken");
+const CardNotFound = require("../errors/CardNotFound");
 
 const createUser = (req, res, next) => {
   const { name, about, avatar, email, password } = req.body;
@@ -44,7 +45,9 @@ const getUser = (req, res, next) => {
       res.send(user);
     })
     .catch((err) => {
-      if (err.name === 'UserNotFound') {
+      if (err.name === 'CastError' || err.statusCode === errorsCodes.ValidationError) {
+        throw new ApplicationError(errorsCodes.ValidationError, 'Переданы некорректные данные пользователя');
+      } else if (err.statusCode === errorsCodes.NotFoundError) {
         throw new UserNotFound();
       } else {
         next(err);

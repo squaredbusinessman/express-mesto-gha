@@ -12,6 +12,7 @@ const ValidationError = 400;
 const NotFoundError = 404;
 const UnAuthorizedError = 401;
 const ExistingEmailError = 409;
+const AccessError = 403;
 
 module.exports = {
   InternalError,
@@ -19,4 +20,5 @@ module.exports = {
   NotFoundError,
   UnAuthorizedError,
   ExistingEmailError,
+  AccessError,
 };
