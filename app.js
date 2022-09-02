@@ -3,6 +3,9 @@ const mongoose = require('mongoose');
 const { celebrate, Joi, errors } = require('celebrate');
 const auth = require('./middlewares/auth');
 
+// eslint-disable-next-line prefer-regex-literals
+const avatarUrlRegex = new RegExp('^(?:http(s)?:\\/\\/)?[\\w.-]+(?:\\.[\\w.-]+)+[\\w\\-._~:/?#[\\]@!$&\'()*+,;=]+$');
+
 const { PORT = 3000 } = process.env;
 
 const app = express();
@@ -29,7 +32,7 @@ app.post('/signup', celebrate({
     name: Joi.string().min(2).max(30),
     about: Joi.string().min(2).max(30),
     avatar: Joi.string()
-      .regex('^(?:http(s)?:\\/\\/)?[\\w.-]+(?:\\.[\\w.-]+)+[\\w\\-._~:/?#[\\]@!$&\'()*+,;=]+$')
+      .pattern(avatarUrlRegex)
       .message('Введите валидный URL-адрес нового аватара'),
     email: Joi.string().email().required(),
     password: Joi.string().min(6).required(),
