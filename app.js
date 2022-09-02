@@ -35,10 +35,8 @@ app.post('/signup', celebrate({
   }),
 }), createUserRouter);
 
-app.use(auth);
-
-app.use('/users', usersRouter);
-app.use('/cards', cardsRouter);
+app.use('/users', auth, usersRouter);
+app.use('/cards', auth, cardsRouter);
 
 app.use('*', () => {
   throw new ApplicationError(errorsCodes.UnAuthorizedError, 'Произошла ошибка при попытке авторизации');
