@@ -19,7 +19,7 @@ const createCard = (req, res, next) => {
       res.status(201).send(card);
     })
     .catch((err) => {
-      if (err.statusCode === errorsCodes.ValidationError) {
+      if (err.statusCode === errorsCodes.ValidationError || err.message === 'card validation failed') {
         throw new ApplicationError(errorsCodes.ValidationError, 'Переданы некорректные данные при создании карточки');
       } else {
         next(err);
@@ -29,6 +29,9 @@ const createCard = (req, res, next) => {
 
 const deleteCard = (req, res, next) => {
   Card.findById(req.params.id)
+    .orFail(() => {
+      throw new CardNotFound();
+    })
     .then((card) => {
       const owner = card.owner.toString().replace('new ObjectId("', '');
       if (owner !== req.user._id) {
@@ -46,7 +49,8 @@ const deleteCard = (req, res, next) => {
       } else {
         next(err);
       }
-    }).catch(next);
+    })
+    .catch(next);
 };
 
 const likeCard = (req, res, next) => {
@@ -56,6 +60,9 @@ const likeCard = (req, res, next) => {
     { new: true },
   )
     .then((card) => {
+      if (!card) {
+        throw new CardNotFound();
+      }
       res.status(201).send(card);
     })
     .catch((err) => {
@@ -76,6 +83,9 @@ const dislikeCard = (req, res, next) => {
     { new: true },
   )
     .then((card) => {
+      if (!card) {
+        throw new CardNotFound();
+      }
       res.send(card);
     })
     .catch((err) => {

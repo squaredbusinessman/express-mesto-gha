@@ -29,17 +29,20 @@ app.post('/signup', celebrate({
     name: Joi.string().min(2).max(30),
     about: Joi.string().min(2).max(30),
     avatar: Joi.string()
-      .regex(/https?:\/\/(www)?(\.)?([0-9а-яa-zё]{1,})?(\.)?([0-9а-яa-zё]{1,})?(\.)?[0-9а-яa-zё]{1,}\.[а-яa-zё]{2,4}[a-zа-яё\-._~:/?#[\]@!$&'()*+,;=]*#?/i),
+      .regex('^(?:http(s)?:\\/\\/)?[\\w.-]+(?:\\.[\\w.-]+)+[\\w\\-._~:/?#[\\]@!$&\'()*+,;=]+$')
+      .message('Введите валидный URL-адрес нового аватара'),
     email: Joi.string().email().required(),
-    password: Joi.string().min(8).required(),
+    password: Joi.string().min(6).required(),
   }),
 }), createUserRouter);
 
-app.use('/users', auth, usersRouter);
-app.use('/cards', auth, cardsRouter);
+app.use(auth);
+
+app.use('/users', usersRouter);
+app.use('/cards', cardsRouter);
 
 app.use('*', () => {
-  throw new ApplicationError(errorsCodes.UnAuthorizedError, 'Произошла ошибка при попытке авторизации');
+  throw new ApplicationError(errorsCodes.NotFoundError, 'Запрашиваемая страница не существует');
 });
 
 app.use(errors());

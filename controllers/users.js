@@ -43,30 +43,37 @@ const getUserData = (req, res, next) => {
       res.send(user);
     })
     .catch((err) => {
-      if (err.name === 'CastError') {
+      if (err.name === 'CastError' || err.statusCode === errorsCodes.ValidationError) {
         throw new ApplicationError(errorsCodes.ValidationError, 'Указаны некорректные данные пользователя');
-      } else if (err.name === 'UserNotFound') {
+      } else if (err.statusCode === errorsCodes.NotFoundError) {
         throw new UserNotFound();
       } else {
         next(err);
       }
-    }).catch(next);
+    })
+    .catch(next);
 };
 
 const getUser = (req, res, next) => {
   User.findById(req.params.id)
+    .orFail(() => {
+      throw new UserNotFound();
+    })
     .then((user) => {
       res.send(user);
     })
     .catch((err) => {
-      if (err.name === 'CastError' || err.statusCode === errorsCodes.ValidationError) {
+      if (err.kind === 'ObjectId') {
+        throw ApplicationError(errorsCodes.ValidationError, 'Неверный формат id пользователя');
+      } else if (err.message === 'CastError' || err.statusCode === errorsCodes.ValidationError) {
         throw new ApplicationError(errorsCodes.ValidationError, 'Переданы некорректные данные пользователя');
       } else if (err.statusCode === errorsCodes.NotFoundError) {
         throw new UserNotFound();
       } else {
         next(err);
       }
-    }).catch(next);
+    })
+    .catch(next);
 };
 
 const getUsers = (req, res, next) => {
@@ -96,7 +103,8 @@ const updateUserInfo = (req, res, next) => {
       } else {
         next(err);
       }
-    }).catch(next);
+    })
+    .catch(next);
 };
 
 const updateAvatar = (req, res, next) => {
@@ -117,27 +125,36 @@ const updateAvatar = (req, res, next) => {
       } else {
         next(err);
       }
-    }).catch(next);
+    })
+    .catch(next);
 };
 
 const login = (req, res, next) => {
   const { email, password } = req.body;
-  User.FindUserByCredentials(email, password)
+  User.findOne({ email }).select('+password')
     .then((user) => {
-      const token = jwt.sign(
-        { _id: user._id },
-        'very-hard-key',
-        { expiresIn: '7d' },
-        { algorithm: 'RS256' },
-      );
+      if (!user) {
+        return Promise.reject(new Error('Введены неправильные почта или пароль'));
+      }
 
-      res
-        .cookie('jwt', token, {
-          maxAge: 3600000 * 24 * 7,
-          httpOnly: true,
+      return bcrypt.compare(password, user.password)
+        .then((matched) => {
+          if (!matched) {
+            return Promise.reject(new Error('Введены неправильные почта или пароль'));
+          }
+
+          const token = jwt.sign({ _id: user._id }, 'very-hard-key', { expiresIn: '7d' });
+
+          res
+            .cookie('jwt', token, {
+              maxAge: 3600000 * 24 * 7,
+              httpOnly: true,
+            })
+            .send({ token });
         })
-        .send({ token });
-    }).catch(next);
+        .catch(next);
+    })
+    .catch(next);
 };
 
 module.exports = {
