@@ -30,12 +30,18 @@ const createCard = (req, res) => {
 };
 
 const deleteCard = (req, res) => {
-  Card.findByIdAndRemove(req.params.cardId)
+  Card.findById(req.params.id)
     .orFail(() => {
       throw new CardNotFound();
     })
     .then((card) => {
-      res.send(card);
+      const owner = card.owner.toString().replace('new ObjectId("', '');
+      if (owner !== req.user._id) {
+        throw new ApplicationError(403, 'Можно удалять только созданные вами посты');
+      } else {
+        Card.findByIdAndRemove(req.params.id)
+          .then((card) => { res.send(card) });
+      }
     })
     .catch((err) => {
       if (err.name === 'CastError') {
