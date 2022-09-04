@@ -5,7 +5,7 @@ const errorsCodes = require('../errors/errorsCodes');
 module.exports = (req, res, next) => {
   const { authorization } = req.headers;
 
-  if (!authorization|| !authorization.startsWith('Bearer ')) {
+  if (!authorization || !authorization.startsWith('Bearer ')) {
     return next(new ApplicationError(errorsCodes.UnAuthorizedError, 'Вы должны быть авторизованы'));
   }
 
