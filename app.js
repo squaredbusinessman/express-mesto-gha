@@ -2,6 +2,8 @@ const express = require('express');
 const mongoose = require('mongoose');
 const { celebrate, Joi, errors } = require('celebrate');
 const auth = require('./middlewares/auth');
+const errorsCodes = require('./errors/errorsCodes');
+const ApplicationError = require('./errors/ApplicationError');
 
 // eslint-disable-next-line prefer-regex-literals
 const avatarUrlRegex = new RegExp('^(?:http(s)?:\\/\\/)?[\\w.-]+(?:\\.[\\w.-]+)+[\\w\\-._~:/?#[\\]@!$&\'()*+,;=]+$');
@@ -14,8 +16,6 @@ const loginRouter = require('./routes/users');
 const createUserRouter = require('./routes/users');
 const usersRouter = require('./routes/users');
 const cardsRouter = require('./routes/cards');
-const errorsCodes = require('./errors/errorsCodes');
-const ApplicationError = require('./errors/ApplicationError');
 
 mongoose.connect('mongodb://localhost:27017/mestodb');
 
