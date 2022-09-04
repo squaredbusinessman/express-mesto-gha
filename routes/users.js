@@ -8,6 +8,7 @@ const {
   updateUserInfo,
 } = require('../controllers/users');
 
+// eslint-disable-next-line prefer-regex-literals
 const avatarRegExp = new RegExp('^(?:http(s)?:\\/\\/)?[\\w.-]+(?:\\.[\\w.-]+)+[\\w\\-._~:/?#[\\]@!$&\'()*+,;=.]+$');
 
 router.get('/', getUsers);
@@ -17,7 +18,7 @@ router.get('/:id', celebrate({
     id: Joi.string().hex().length(24),
   }),
 }), getUser);
-router.patch('/me',  celebrate({
+router.patch('/me', celebrate({
   body: Joi.object().keys({
     name: Joi.string().min(2).max(30),
     about: Joi.string().min(2).max(30),
