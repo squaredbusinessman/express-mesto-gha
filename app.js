@@ -35,7 +35,7 @@ app.post('/signup', celebrate({
       .pattern(avatarUrlRegex)
       .message('Введите валидный URL-адрес нового аватара'),
     email: Joi.string().email().required(),
-    password: Joi.string().min(6).required(),
+    password: Joi.string().required(),
   }),
 }), createUserRouter);
 
