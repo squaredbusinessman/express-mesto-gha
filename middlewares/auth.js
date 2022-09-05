@@ -6,7 +6,7 @@ module.exports = (req, res, next) => {
   const { authorization } = req.headers;
 
   if (!authorization || !authorization.startsWith('Bearer ')) {
-    next(new ApplicationError(errorsCodes.UnAuthorizedError, 'Вы должны быть авторизованы'));
+    return next(new ApplicationError(errorsCodes.UnAuthorizedError, 'Вы должны быть авторизованы'));
   }
 
   const token = authorization.replace('Bearer ', '');
@@ -17,12 +17,10 @@ module.exports = (req, res, next) => {
     payload = jwt.verify(token, 'very-hard-key');
   } catch (err) {
     // отправим ошибку, если не получилось
-    next(new ApplicationError(errorsCodes.UnAuthorizedError, 'Вы должны быть авторизованы'));
+    return next(new ApplicationError(errorsCodes.UnAuthorizedError, 'Вы должны быть авторизованы'));
   }
 
   req.user = payload; // записываем пейлоуд в объект запроса
 
   next(); // пропускаем запрос дальше
-
-  return undefined;
 };

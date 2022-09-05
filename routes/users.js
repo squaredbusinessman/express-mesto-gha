@@ -12,18 +12,22 @@ const {
 const avatarRegExp = new RegExp('^(?:http(s)?:\\/\\/)?[\\w.-]+(?:\\.[\\w.-]+)+[\\w\\-._~:/?#[\\]@!$&\'()*+,;=.]+$');
 
 router.get('/', getUsers);
+
 router.get('/me', getUserData);
+
 router.get('/:id', celebrate({
   params: Joi.object().keys({
     id: Joi.string().hex().length(24),
   }),
 }), getUser);
+
 router.patch('/me', celebrate({
   body: Joi.object().keys({
     name: Joi.string().min(2).max(30),
     about: Joi.string().min(2).max(30),
   }),
 }), updateUserInfo);
+
 router.patch('/me/avatar', celebrate({
   body: Joi.object().keys({
     avatar: Joi.string()

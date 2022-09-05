@@ -1,15 +1,17 @@
 const mongoose = require('mongoose');
+const validator = require('validator');
 
 const cardSchema = new mongoose.Schema({
   name: {
     type: String,
-    required: true,
+    required: [true, 'Поле должно быть заполнено и валидно'],
     minLength: 2,
     maxLength: 30,
   },
   link: {
     type: String,
-    required: true,
+    required: [true, 'Укажите валидную ссылку на фото'],
+    validate: [validator.isURL],
   },
   owner: {
     type: mongoose.Schema.Types.ObjectId,
@@ -18,8 +20,6 @@ const cardSchema = new mongoose.Schema({
   },
   likes: [{
     type: mongoose.Schema.Types.ObjectId,
-    required: true,
-    ref: 'user',
     default: [],
   }],
   createdAt: {
