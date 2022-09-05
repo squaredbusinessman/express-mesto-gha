@@ -23,12 +23,21 @@ const createUser = (req, res, next) => {
         password: hash,
       },
     ))
-    .then((user) => res.status(201).send(user))
+    .then((user) => {
+      res.status(201).send({
+        name: user.name,
+        about: user.about,
+        avatar: user.avatar,
+        email: user.email,
+        _id: user._id,
+        __v: user.__v,
+      })
+    })
     .catch((err) => {
       if (err.statusCode === errorsCodes.ValidationError || err.message === 'user validation failed') {
         throw new ApplicationError(errorsCodes.ValidationError, 'Введены некорректные данные при создании пользователя');
       } else if (err.statusCode === errorsCodes.ExistingEmailError) {
-        throw new ApplicationError(errorsCodes.ExistingEmailError, 'пользователь с данным email уже зарегистрирован');
+        next(new ApplicationError(errorsCodes.ExistingEmailError, 'пользователь с данным email уже зарегистрирован'));
       } else {
         next(err);
       }
@@ -44,9 +53,9 @@ const getUserData = (req, res, next) => {
     })
     .catch((err) => {
       if (err.name === 'CastError' || err.statusCode === errorsCodes.ValidationError) {
-        throw new ApplicationError(errorsCodes.ValidationError, 'Указаны некорректные данные пользователя');
+        next(new ApplicationError(errorsCodes.ValidationError, 'Указаны некорректные данные пользователя'));
       } else if (err.statusCode === errorsCodes.NotFoundError) {
-        throw new UserNotFound();
+        next(new UserNotFound());
       } else {
         next(err);
       }
@@ -57,18 +66,18 @@ const getUserData = (req, res, next) => {
 const getUser = (req, res, next) => {
   User.findById(req.params.id)
     .orFail(() => {
-      throw new UserNotFound();
+      next(new UserNotFound());
     })
     .then((user) => {
       res.send(user);
     })
     .catch((err) => {
       if (err.kind === 'ObjectId') {
-        throw ApplicationError(errorsCodes.ValidationError, 'Неверный формат id пользователя');
+        next(new ApplicationError(errorsCodes.ValidationError, 'Неверный формат id пользователя'));
       } else if (err.message === 'CastError' || err.statusCode === errorsCodes.ValidationError) {
-        throw new ApplicationError(errorsCodes.ValidationError, 'Переданы некорректные данные пользователя');
+        next(new ApplicationError(errorsCodes.ValidationError, 'Переданы некорректные данные пользователя'));
       } else if (err.statusCode === errorsCodes.NotFoundError) {
-        throw new UserNotFound();
+        next(new UserNotFound());
       } else {
         next(err);
       }
@@ -97,9 +106,9 @@ const updateUserInfo = (req, res, next) => {
     })
     .catch((err) => {
       if (err.statusCode === errorsCodes.NotFoundError) {
-        throw new UserNotFound();
+        next(new UserNotFound());
       } else if (err.statusCode === errorsCodes.ValidationError || err.name === 'CastError') {
-        throw new ApplicationError(errorsCodes.ValidationError, 'Введены некорректные данные для обновления информации о пользователе');
+        next(new ApplicationError(errorsCodes.ValidationError, 'Введены некорректные данные для обновления информации о пользователе'));
       } else {
         next(err);
       }
@@ -119,9 +128,9 @@ const updateAvatar = (req, res, next) => {
     })
     .catch((err) => {
       if (err.name === 'CastError' || err.statusCode === errorsCodes.ValidationError) {
-        throw new ApplicationError(errorsCodes.ValidationError, 'Данные для обновления аватара - некорректны');
+        next(new ApplicationError(errorsCodes.ValidationError, 'Данные для обновления аватара - некорректны'));
       } else if (err.name === 'UserNotFound') {
-        throw new UserNotFound();
+        next(new UserNotFound());
       } else {
         next(err);
       }
@@ -134,24 +143,22 @@ const login = (req, res, next) => {
   User.findOne({ email }).select('+password')
     .then((user) => {
       if (!user) {
-        return Promise.reject(new Error('Введены неправильные почта или пароль'));
+        throw new ApplicationError(errorsCodes.UnAuthorizedError, 'Введены неправильные почта или пароль');
       }
 
       return bcrypt.compare(password, user.password)
         .then((matched) => {
           if (!matched) {
-            return Promise.reject(new Error('Введены неправильные почта или пароль'));
+            throw new ApplicationError(errorsCodes.UnAuthorizedError, 'Введены неправильные почта или пароль');
           }
 
           const token = jwt.sign({ _id: user._id }, 'very-hard-key', { expiresIn: '7d' });
 
-          res
-            .cookie('jwt', token, {
+          res.cookie('jwt', token, {
               maxAge: 3600000 * 24 * 7,
               httpOnly: true,
               sameSite: true,
-            })
-            .send({ token });
+            }).end();
         })
         .catch(next);
     })
