@@ -46,6 +46,9 @@ const deleteCard = (req, res, next) => {
         ));
       } else {
         Card.findByIdAndRemove(req.params.id)
+          .orFail(() => {
+            throw new CardNotFound();
+          })
           .then((removedCard) => { res.send(removedCard); });
       }
     })
