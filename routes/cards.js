@@ -21,7 +21,7 @@ router.delete('/:cardId', celebrate({
   params: Joi.object().keys({
     id: Joi.string().hex().length(24),
   }),
-}),deleteCard);
+}), deleteCard);
 router.put('/:cardId/likes', celebrate({
   params: Joi.object().keys({
     id: Joi.string().hex().length(24),
