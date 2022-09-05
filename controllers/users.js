@@ -30,8 +30,7 @@ const createUser = (req, res, next) => {
         avatar: user.avatar,
         email: user.email,
         _id: user._id,
-        __v: user.__v,
-      })
+      });
     })
     .catch((err) => {
       if (err.statusCode === errorsCodes.ValidationError || err.message === 'user validation failed') {
@@ -155,10 +154,10 @@ const login = (req, res, next) => {
           const token = jwt.sign({ _id: user._id }, 'very-hard-key', { expiresIn: '7d' });
 
           res.cookie('jwt', token, {
-              maxAge: 3600000 * 24 * 7,
-              httpOnly: true,
-              sameSite: true,
-            }).end();
+            maxAge: 3600000 * 24 * 7,
+            httpOnly: true,
+            sameSite: true,
+          }).end();
         })
         .catch(next);
     })
