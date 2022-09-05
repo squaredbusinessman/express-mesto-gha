@@ -145,7 +145,13 @@ const login = (req, res, next) => {
 
           const token = jwt.sign({ _id: user._id }, 'very-hard-key', { expiresIn: '7d' });
 
-          res.send({ token });
+          res
+            .cookie('jwt', token, {
+              maxAge: 3600000 * 24 * 7,
+              httpOnly: true,
+              sameSite: true,
+            })
+            .send({ token });
         })
         .catch(next);
     })

@@ -1,4 +1,5 @@
 const express = require('express');
+const router = require('express').Router();
 const mongoose = require('mongoose');
 const { celebrate, Joi, errors } = require('celebrate');
 const usersRouter = require('./routes/users');
@@ -6,7 +7,7 @@ const cardsRouter = require('./routes/cards');
 const auth = require('./middlewares/auth');
 const errorsCodes = require('./errors/errorsCodes');
 const ApplicationError = require('./errors/ApplicationError');
-const { createUserRouter, loginRouter } = require('./routes/users');
+const { createUser, login } = require('./controllers/users');
 
 // eslint-disable-next-line prefer-regex-literals
 const avatarUrlRegex = new RegExp('^(?:http(s)?:\\/\\/)?[\\w.-]+(?:\\.[\\w.-]+)+[\\w\\-._~:/?#[\\]@!$&\'()*+,;=]+$');
@@ -19,12 +20,7 @@ mongoose.connect('mongodb://localhost:27017/mestodb');
 
 app.use(express.json());
 
-app.post('/signin', celebrate({
-  body: Joi.object().keys({
-    email: Joi.string().email().required(),
-    password: Joi.string().required(),
-  }),
-}), loginRouter);
+app.post('/signin', login);
 app.post('/signup', celebrate({
   body: Joi.object().keys({
     name: Joi.string().min(2).max(30),
@@ -35,7 +31,7 @@ app.post('/signup', celebrate({
     email: Joi.string().email().required(),
     password: Joi.string().required(),
   }),
-}), createUserRouter);
+}), createUser);
 
 app.use(auth);
 
