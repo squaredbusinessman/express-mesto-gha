@@ -23,6 +23,7 @@ app.use(express.json());
 app.use(cookieParser());
 
 app.post('/signin', login);
+
 app.post('/signup', celebrate({
   body: Joi.object().keys({
     name: Joi.string().min(2).max(30),

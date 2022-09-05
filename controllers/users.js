@@ -26,7 +26,7 @@ const createUser = (req, res, next) => {
           errorsCodes.ValidationError,
           'Введены некорректные данные при создании пользователя',
         ));
-      } else if (err.code === errorsCodes.ExistingEmailError) {
+      } else if (err.code === errorsCodes.DuplicateError) {
         next(new ApplicationError(
           errorsCodes.ExistingEmailError,
           'Пользователь с данным email уже зарегистрирован',

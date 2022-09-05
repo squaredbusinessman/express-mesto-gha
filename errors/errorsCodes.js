@@ -7,6 +7,7 @@
 // 422 - unprocessable entity
 // 404 - not found
 
+const DuplicateError = 11000;
 const InternalError = 500;
 const ValidationError = 400;
 const NotFoundError = 404;
@@ -21,4 +22,5 @@ module.exports = {
   UnAuthorizedError,
   ExistingEmailError,
   AccessError,
+  DuplicateError,
 };
