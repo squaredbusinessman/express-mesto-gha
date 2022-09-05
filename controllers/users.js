@@ -7,36 +7,30 @@ const errorsCodes = require('../errors/errorsCodes');
 
 const createUser = (req, res, next) => {
   const {
-    name,
-    about,
-    avatar,
-    email,
-    password,
+    name, about, avatar, email, password,
   } = req.body;
   bcrypt.hash(password, 10)
     .then((hash) => User.create(
       {
-        name,
-        about,
-        avatar,
-        email,
-        password: hash,
+        name, about, avatar, email, password: hash,
       },
     ))
     .then((user) => {
-      res.status(201).send({
-        name: user.name,
-        about: user.about,
-        avatar: user.avatar,
-        email: user.email,
-        _id: user._id,
-      });
+      const userWithoutPass = user.toObject();
+      delete userWithoutPass.password;
+      res.status(201).send(userWithoutPass);
     })
     .catch((err) => {
-      if (err.statusCode === errorsCodes.ValidationError || err.message === 'user validation failed') {
-        throw new ApplicationError(errorsCodes.ValidationError, 'Введены некорректные данные при создании пользователя');
-      } else if (err.statusCode === errorsCodes.ExistingEmailError) {
-        next(new ApplicationError(errorsCodes.ExistingEmailError, 'пользователь с данным email уже зарегистрирован'));
+      if (err.name === 'ValidationError') {
+        next(new ApplicationError(
+          errorsCodes.ValidationError,
+          'Введены некорректные данные при создании пользователя',
+        ));
+      } else if (err.code === errorsCodes.ExistingEmailError) {
+        next(new ApplicationError(
+          errorsCodes.ExistingEmailError,
+          'Пользователь с данным email уже зарегистрирован',
+        ));
       } else {
         next(err);
       }
@@ -50,15 +44,6 @@ const getUserData = (req, res, next) => {
     .then((user) => {
       res.send(user);
     })
-    .catch((err) => {
-      if (err.name === 'CastError' || err.statusCode === errorsCodes.ValidationError) {
-        next(new ApplicationError(errorsCodes.ValidationError, 'Указаны некорректные данные пользователя'));
-      } else if (err.statusCode === errorsCodes.NotFoundError) {
-        next(new UserNotFound());
-      } else {
-        next(err);
-      }
-    })
     .catch(next);
 };
 
@@ -71,17 +56,15 @@ const getUser = (req, res, next) => {
       res.send(user);
     })
     .catch((err) => {
-      if (err.kind === 'ObjectId') {
-        next(new ApplicationError(errorsCodes.ValidationError, 'Неверный формат id пользователя'));
-      } else if (err.message === 'CastError' || err.statusCode === errorsCodes.ValidationError) {
-        next(new ApplicationError(errorsCodes.ValidationError, 'Переданы некорректные данные пользователя'));
-      } else if (err.statusCode === errorsCodes.NotFoundError) {
-        next(new UserNotFound());
+      if (err.message === 'CastError') {
+        next(new ApplicationError(
+          errorsCodes.ValidationError,
+          'Переданы некорректные данные пользователя',
+        ));
       } else {
         next(err);
       }
-    })
-    .catch(next);
+    });
 };
 
 const getUsers = (req, res, next) => {
@@ -104,15 +87,15 @@ const updateUserInfo = (req, res, next) => {
       res.send(user);
     })
     .catch((err) => {
-      if (err.statusCode === errorsCodes.NotFoundError) {
-        next(new UserNotFound());
-      } else if (err.statusCode === errorsCodes.ValidationError || err.name === 'CastError') {
-        next(new ApplicationError(errorsCodes.ValidationError, 'Введены некорректные данные для обновления информации о пользователе'));
+      if (err.name === 'ValidationError') {
+        next(new ApplicationError(
+          errorsCodes.ValidationError,
+          'Введены некорректные данные для обновления информации о пользователе',
+        ));
       } else {
         next(err);
       }
-    })
-    .catch(next);
+    });
 };
 
 const updateAvatar = (req, res, next) => {
@@ -126,15 +109,15 @@ const updateAvatar = (req, res, next) => {
       res.send(user);
     })
     .catch((err) => {
-      if (err.name === 'CastError' || err.statusCode === errorsCodes.ValidationError) {
-        next(new ApplicationError(errorsCodes.ValidationError, 'Данные для обновления аватара - некорректны'));
-      } else if (err.name === 'UserNotFound') {
-        next(new UserNotFound());
+      if (err.name === 'ValidationError') {
+        next(new ApplicationError(
+          errorsCodes.ValidationError,
+          'Данные для обновления аватара - некорректны',
+        ));
       } else {
         next(err);
       }
-    })
-    .catch(next);
+    });
 };
 
 const login = (req, res, next) => {
@@ -151,15 +134,18 @@ const login = (req, res, next) => {
             throw new ApplicationError(errorsCodes.UnAuthorizedError, 'Введены неправильные почта или пароль');
           }
 
-          const token = jwt.sign({ _id: user._id }, 'very-hard-key', { expiresIn: '7d' });
+          const token = jwt.sign(
+            { _id: user._id },
+            'very-hard-key',
+            { expiresIn: '7d' },
+          );
 
           res.cookie('jwt', token, {
             maxAge: 3600000 * 24 * 7,
             httpOnly: true,
             sameSite: true,
           }).end();
-        })
-        .catch(next);
+        });
     })
     .catch(next);
 };

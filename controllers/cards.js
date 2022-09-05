@@ -19,12 +19,15 @@ const createCard = (req, res, next) => {
       res.status(201).send(card);
     })
     .catch((err) => {
-      if (err.statusCode === errorsCodes.ValidationError || err.message === 'card validation failed') {
-        throw new ApplicationError(errorsCodes.ValidationError, 'Переданы некорректные данные при создании карточки');
+      if (err.name === 'ValidationError') {
+        throw new ApplicationError(
+          errorsCodes.ValidationError,
+          'Переданы некорректные данные при создании карточки',
+        );
       } else {
         next(err);
       }
-    }).catch(next);
+    });
 };
 
 const deleteCard = (req, res, next) => {
@@ -33,24 +36,29 @@ const deleteCard = (req, res, next) => {
       throw new CardNotFound();
     })
     .then((card) => {
-      const owner = card.owner.toString().replace('new ObjectId("', '');
+      const owner = card.owner
+        .toString()
+        .replace('new ObjectId("', '');
       if (owner !== req.user._id) {
-        throw new ApplicationError(errorsCodes.AccessError, 'Можно удалять только созданные вами посты');
+        next(new ApplicationError(
+          errorsCodes.AccessError,
+          'Можно удалять только созданные вами посты',
+        ));
       } else {
         Card.findByIdAndRemove(req.params.id)
           .then((removedCard) => { res.send(removedCard); });
       }
     })
     .catch((err) => {
-      if (err.name === 'CastError' || err.statusCode === errorsCodes.ValidationError) {
-        throw new ApplicationError(errorsCodes.ValidationError, 'Переданы некорректные данные для удаления карточки');
-      } else if (err.statusCode === errorsCodes.NotFoundError) {
-        throw new CardNotFound();
+      if (err.name === 'CastError') {
+        next(new ApplicationError(
+          errorsCodes.ValidationError,
+          'Переданы некорректные данные для удаления карточки',
+        ));
       } else {
         next(err);
       }
-    })
-    .catch(next);
+    });
 };
 
 const likeCard = (req, res, next) => {
@@ -66,14 +74,15 @@ const likeCard = (req, res, next) => {
       res.status(201).send(card);
     })
     .catch((err) => {
-      if (err.name === 'CastError' || err.statusCode === errorsCodes.ValidationError) {
-        throw new ApplicationError(errorsCodes.ValidationError, 'Переданы некорректные данные при лайке выбранного поста');
-      } else if (err.statusCode === errorsCodes.NotFoundError) {
-        throw new CardNotFound();
+      if (err.name === 'CastError') {
+        next(new ApplicationError(
+          errorsCodes.ValidationError,
+          'Переданы некорректные данные при лайке выбранного поста',
+        ));
       } else {
         next(err);
       }
-    }).catch(next);
+    });
 };
 
 const dislikeCard = (req, res, next) => {
@@ -89,14 +98,12 @@ const dislikeCard = (req, res, next) => {
       res.send(card);
     })
     .catch((err) => {
-      if (err.name === 'CastError' || err.statusCode === errorsCodes.ValidationError) {
-        throw new ApplicationError(errorsCodes.ValidationError, 'Переданы некорректные данные при дизлайке выбранного поста');
-      } else if (err.statusCode === errorsCodes.NotFoundError) {
-        throw new CardNotFound();
+      if (err.name === 'CastError') {
+        next(new ApplicationError(errorsCodes.ValidationError, 'Переданы некорректные данные при дизлайке выбранного поста'));
       } else {
         next(err);
       }
-    }).catch(next);
+    });
 };
 
 module.exports = {
