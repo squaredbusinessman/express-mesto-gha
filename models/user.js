@@ -1,5 +1,6 @@
 const mongoose = require('mongoose');
 const validator = require('validator');
+const avatarUrlRegex = require('../middlewares/validators');
 
 const userSchema = new mongoose.Schema({
   name: {
@@ -17,6 +18,10 @@ const userSchema = new mongoose.Schema({
   avatar: {
     type: String,
     default: 'https://pictures.s3.yandex.net/resources/jacques-cousteau_1604399756.png',
+    validate: {
+      validator: (v) => avatarUrlRegex.test(v),
+      message: 'Ссылка на аватар - невалидна'
+    },
   },
   email: {
     type: String,
