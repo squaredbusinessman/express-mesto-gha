@@ -46,10 +46,17 @@ const deleteCard = (req, res, next) => {
         ));
       } else {
         Card.findByIdAndRemove(req.params.id)
-          .orFail(() => {
-            throw new CardNotFound();
-          })
-          .then((removedCard) => { res.send(removedCard); });
+          .then((removedCard) => res.send(removedCard))
+          .catch((err) => {
+            if (err.name === 'CastError') {
+              next(new ApplicationError(
+                errorsCodes.ValidationError,
+                'Переданы некорректные данные для удаления карточки',
+              ));
+            } else {
+              next(err);
+            }
+          });
       }
     })
     .catch((err) => {
