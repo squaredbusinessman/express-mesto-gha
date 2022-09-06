@@ -1,4 +1,4 @@
-const {celebrate, Joi} = require("celebrate");
+const { celebrate, Joi } = require('celebrate');
 
 // eslint-disable-next-line prefer-regex-literals
 const avatarUrlRegex = new RegExp('^(?:http(s)?:\\/\\/)?[\\w.-]+(?:\\.[\\w.-]+)+[\\w\\-._~:/?#[\\]@!$&\'()*+,;=]+$');
@@ -43,4 +43,4 @@ module.exports = {
   validateCreateCard,
   validateCardCommon,
   avatarUrlRegex,
-}
+};
