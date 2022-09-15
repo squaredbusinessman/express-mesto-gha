@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 const validator = require('validator');
-const avatarUrlRegex = require('../middlewares/validators');
+const { avatarUrlRegex } = require('../middlewares/validators');
 
 const userSchema = new mongoose.Schema({
   name: {
@@ -25,7 +25,7 @@ const userSchema = new mongoose.Schema({
   },
   email: {
     type: String,
-    required: true,
+    required: [true, 'Поле email необходимо заполнить'],
     unique: true,
     validate: {
       validator: (email) => validator.isEmail(email),
