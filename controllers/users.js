@@ -5,6 +5,8 @@ const UserNotFound = require('../errors/UserNotFound');
 const ApplicationError = require('../errors/ApplicationError');
 const errorsCodes = require('../errors/errorsCodes');
 
+const { NODE_ENV, JWT_SECRET } = process.env;
+
 const createUser = (req, res, next) => {
   const {
     name, about, avatar, email, password,
@@ -136,7 +138,7 @@ const login = (req, res, next) => {
 
           const token = jwt.sign(
             { _id: user._id },
-            'very-hard-key',
+            NODE_ENV === 'production' ? JWT_SECRET : 'very-hard-key',
             { expiresIn: '7d' },
           );
 
