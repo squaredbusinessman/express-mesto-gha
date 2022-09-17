@@ -7,7 +7,7 @@ const requestLogDealer = expressWinston.logger({
     new winston.transports.File({ filename: 'requests.log' }),
   ],
   format: winston.format.json(),
-})
+});
 
 // логгируем все ошибки
 const errorLogDealer = expressWinston.errorLogger({
@@ -15,9 +15,9 @@ const errorLogDealer = expressWinston.errorLogger({
     new winston.transports.File({ filename: 'errors.log' }),
   ],
   format: winston.format.json(),
-})
+});
 
 module.exports = {
   requestLogDealer,
   errorLogDealer,
-}
+};
