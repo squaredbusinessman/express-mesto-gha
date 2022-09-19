@@ -1,7 +1,7 @@
 const Card = require('../models/card');
-const ApplicationError = require('../errors/ApplicationError');
-const CardNotFound = require('../errors/CardNotFound');
-const errorsCodes = require('../errors/errorsCodes');
+const ValidationError = require("../errors/ValidationError");
+const NotFoundError = require("../errors/NotFoundError");
+const AccessError = require("../errors/AccessError");
 
 const getCards = (req, res, next) => {
   Card.find({})
@@ -20,10 +20,7 @@ const createCard = (req, res, next) => {
     })
     .catch((err) => {
       if (err.name === 'ValidationError') {
-        throw new ApplicationError(
-          errorsCodes.ValidationError,
-          'Переданы некорректные данные при создании карточки',
-        );
+        throw new ValidationError('Переданы некорректные данные при создании карточки');
       } else {
         next(err);
       }
@@ -33,17 +30,14 @@ const createCard = (req, res, next) => {
 const deleteCard = (req, res, next) => {
   Card.findById(req.params.id)
     .orFail(() => {
-      throw new CardNotFound();
+      throw new NotFoundError('Карточка с данным id не найдена!');
     })
     .then((card) => {
       const owner = card.owner
         .toString()
         .replace('new ObjectId("', '');
       if (owner !== req.user._id) {
-        next(new ApplicationError(
-          errorsCodes.AccessError,
-          'Можно удалять только созданные вами посты',
-        ));
+        next(new AccessError('Можно удалять только созданные вами посты'));
       } else {
         return card.remove()
           .then(() => res.send({ message: 'Карточка успешно удалена!' }));
@@ -51,10 +45,7 @@ const deleteCard = (req, res, next) => {
     })
     .catch((err) => {
       if (err.name === 'CastError') {
-        next(new ApplicationError(
-          errorsCodes.ValidationError,
-          'Переданы некорректные данные для удаления карточки',
-        ));
+        next(new ValidationError('Переданы некорректные данные для удаления карточки'));
       } else {
         next(err);
       }
@@ -69,16 +60,13 @@ const likeCard = (req, res, next) => {
   )
     .then((card) => {
       if (!card) {
-        throw new CardNotFound();
+        throw new NotFoundError('Карточка с данным id не найдена!');
       }
       res.status(201).send(card);
     })
     .catch((err) => {
       if (err.name === 'CastError') {
-        next(new ApplicationError(
-          errorsCodes.ValidationError,
-          'Переданы некорректные данные при лайке выбранного поста',
-        ));
+        next(new ValidationError('Переданы некорректные данные при лайке выбранного поста'));
       } else {
         next(err);
       }
@@ -93,13 +81,13 @@ const dislikeCard = (req, res, next) => {
   )
     .then((card) => {
       if (!card) {
-        throw new CardNotFound();
+        throw new NotFoundError('Карточка с данным id не найдена!');
       }
       res.send(card);
     })
     .catch((err) => {
       if (err.name === 'CastError') {
-        next(new ApplicationError(errorsCodes.ValidationError, 'Переданы некорректные данные при дизлайке выбранного поста'));
+        next(new ValidationError('Переданы некорректные данные при дизлайке выбранного поста'));
       } else {
         next(err);
       }

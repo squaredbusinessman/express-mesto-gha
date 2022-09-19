@@ -1,9 +1,11 @@
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
 const User = require('../models/user');
-const UserNotFound = require('../errors/UserNotFound');
-const ApplicationError = require('../errors/ApplicationError');
 const errorsCodes = require('../errors/errorsCodes');
+const ValidationError = require("../errors/ValidationError");
+const ExistingDataError = require("../errors/ExistingDataError");
+const UnAuthorizedError = require("../errors/UnAuthorizedError");
+const NotFoundError = require("../errors/NotFoundError");
 
 const { NODE_ENV, JWT_SECRET } = process.env;
 
@@ -24,15 +26,9 @@ const createUser = (req, res, next) => {
     })
     .catch((err) => {
       if (err.name === 'ValidationError') {
-        next(new ApplicationError(
-          errorsCodes.ValidationError,
-          'Введены некорректные данные при создании пользователя',
-        ));
-      } else if (err.code === errorsCodes.DuplicateError) {
-        next(new ApplicationError(
-          errorsCodes.ExistingEmailError,
-          'Пользователь с данным email уже зарегистрирован',
-        ));
+        next(new ValidationError('Введены некорректные данные при создании пользователя'));
+      } else if (err.code === errorsCodes.DuplicateErrorCode) {
+        next(new ExistingDataError('Пользователь с данным email уже зарегистрирован'));
       } else {
         next(err);
       }
@@ -52,17 +48,14 @@ const getUserData = (req, res, next) => {
 const getUser = (req, res, next) => {
   User.findById(req.params.id)
     .orFail(() => {
-      next(new UserNotFound());
+      next(new NotFoundError('Пользователь с данным id не найден'));
     })
     .then((user) => {
       res.send(user);
     })
     .catch((err) => {
       if (err.message === 'CastError') {
-        next(new ApplicationError(
-          errorsCodes.ValidationError,
-          'Переданы некорректные данные пользователя',
-        ));
+        next(new ValidationError('Переданы некорректные данные пользователя'));
       } else {
         next(err);
       }
@@ -90,10 +83,7 @@ const updateUserInfo = (req, res, next) => {
     })
     .catch((err) => {
       if (err.name === 'ValidationError') {
-        next(new ApplicationError(
-          errorsCodes.ValidationError,
-          'Введены некорректные данные для обновления информации о пользователе',
-        ));
+        next(new ValidationError('Введены некорректные данные для обновления информации о пользователе'));
       } else {
         next(err);
       }
@@ -112,10 +102,7 @@ const updateAvatar = (req, res, next) => {
     })
     .catch((err) => {
       if (err.name === 'ValidationError') {
-        next(new ApplicationError(
-          errorsCodes.ValidationError,
-          'Данные для обновления аватара - некорректны',
-        ));
+        next(new ValidationError('Данные для обновления аватара - некорректны'));
       } else {
         next(err);
       }
@@ -127,13 +114,13 @@ const login = (req, res, next) => {
   User.findOne({ email }).select('+password')
     .then((user) => {
       if (!user) {
-        throw new ApplicationError(errorsCodes.UnAuthorizedError, 'Введены неправильные почта или пароль');
+        throw new UnAuthorizedError('Введены неправильные почта или пароль');
       }
 
       return bcrypt.compare(password, user.password)
         .then((matched) => {
           if (!matched) {
-            throw new ApplicationError(errorsCodes.UnAuthorizedError, 'Введены неправильные почта или пароль');
+            throw new UnAuthorizedError('Введены неправильные почта или пароль');
           }
 
           const token = jwt.sign(

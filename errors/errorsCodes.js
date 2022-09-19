@@ -7,20 +7,20 @@
 // 422 - unprocessable entity
 // 404 - not found
 
-const DuplicateError = 11000;
-const InternalError = 500;
-const ValidationError = 400;
-const NotFoundError = 404;
-const UnAuthorizedError = 401;
-const ExistingEmailError = 409;
-const AccessError = 403;
+const DuplicateErrorCode = 11000;
+const InternalErrorCode = 500;
+const ValidationErrorCode = 400;
+const NotFoundErrorCode = 404;
+const UnAuthorizedErrorCode = 401;
+const ExistingEmailErrorCode = 409;
+const AccessErrorCode = 403;
 
 module.exports = {
-  InternalError,
-  ValidationError,
-  NotFoundError,
-  UnAuthorizedError,
-  ExistingEmailError,
-  AccessError,
-  DuplicateError,
+  InternalErrorCode,
+  ValidationErrorCode,
+  NotFoundErrorCode,
+  UnAuthorizedErrorCode,
+  ExistingEmailErrorCode,
+  AccessErrorCode,
+  DuplicateErrorCode,
 };
