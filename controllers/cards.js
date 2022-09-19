@@ -45,18 +45,8 @@ const deleteCard = (req, res, next) => {
           'Можно удалять только созданные вами посты',
         ));
       } else {
-        Card.findByIdAndRemove(req.params.id)
-          .then((removedCard) => res.send(removedCard))
-          .catch((err) => {
-            if (err.name === 'CastError') {
-              next(new ApplicationError(
-                errorsCodes.ValidationError,
-                'Переданы некорректные данные для удаления карточки',
-              ));
-            } else {
-              next(err);
-            }
-          });
+        return card.remove()
+          .then(() => res.send({ message: 'Карточка успешно удалена!' }));
       }
     })
     .catch((err) => {

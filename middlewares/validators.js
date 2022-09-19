@@ -1,7 +1,6 @@
 const { celebrate, Joi } = require('celebrate');
 
-// eslint-disable-next-line prefer-regex-literals
-const avatarUrlRegex = new RegExp('^(?:http(s)?:\\/\\/)?[\\w.-]+(?:\\.[\\w.-]+)+[\\w\\-._~:/?#[\\]@!$&\'()*+,;=]+$');
+const avatarUrlRegex = /(\b(https?|ftp|file):\/\/[-A-Z0-9+&@#/%?=~_|!:,.;]*[-A-Z0-(+&@#/%+~_|])/ig;
 
 const validateAuthentication = celebrate({
   body: Joi.object().keys({
