@@ -1,7 +1,7 @@
 const Card = require('../models/card');
-const ValidationError = require("../errors/ValidationError");
-const NotFoundError = require("../errors/NotFoundError");
-const AccessError = require("../errors/AccessError");
+const ValidationError = require('../errors/ValidationError');
+const NotFoundError = require('../errors/NotFoundError');
+const AccessError = require('../errors/AccessError');
 
 const getCards = (req, res, next) => {
   Card.find({})
