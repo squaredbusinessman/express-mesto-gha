@@ -1,6 +1,6 @@
 const { celebrate, Joi } = require('celebrate');
 
-const avatarUrlRegex = /(\b(https?|ftp|file):\/\/[-A-Z0-9+&@#/%?=~_|!:,.;]*[-A-Z0-(+&@#/%+~_|])/ig;
+const avatarUrlRegex = /^(?:http(s)?:\/\/)?[\w.-]+(?:\.[\w.-]+)+[\w\-._~:/?#[\]@!$&'()*+,;=.]+$/;
 
 const validateAuthentication = celebrate({
   body: Joi.object().keys({
@@ -14,7 +14,7 @@ const validateAuthorization = celebrate({
     name: Joi.string().min(2).max(30),
     about: Joi.string().min(2).max(30),
     avatar: Joi.string()
-      .pattern(avatarUrlRegex)
+      .pattern(new RegExp(avatarUrlRegex))
       .message('Введите валидный URL-адрес аватара'),
     email: Joi.string().email().required(),
     password: Joi.string().required(),
@@ -27,7 +27,7 @@ const validateCreateCard = celebrate({
     link: Joi.string()
       .required()
       .regex(/https?:\/\/(www)?(\.)?[0-9а-яa-zё]{1,}\.[а-яa-zё]{2,4}[a-zа-яё\-._~:/?#[\]@!$&'()*+,;=]*#?/i),
-  }).unknown(true),
+  }),
 });
 
 const validateCardCommon = celebrate({
